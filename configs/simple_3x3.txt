@@ -1,0 +1,22 @@
+---
+env_config:
+  layout: |
+      XXXXX
+      XADDX
+      XDDDX
+      XDDAX
+      XXXXX
+ray_config:
+  framework: torch
+  train_batch_size: 4000
+  rollout_fragment_length: 1000
+  sgd_minibatch_size: 512
+  num_sgd_iter: 3
+  lambda: 0.92
+  kl_coeff: 0.2
+  lr: 1.0e-5
+  vf_loss_coeff: 1.0e-2
+  gamma: 0.99
+run_config:
+  verbose: true
+  wandb_key_file: WANDB_TOKEN
