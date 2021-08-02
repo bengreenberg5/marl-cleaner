@@ -14,14 +14,9 @@ blessings==1.7
 brotlipy==0.7.0
 cachetools==4.2.2
 certifi==2021.5.30
-cffi @ file:///tmp/build/80754af9/cffi_1625814692085/work
-chardet @ file:///tmp/build/80754af9/chardet_1607706775000/work
 click==8.0.1
 cloudpickle==1.6.0
 colorama==0.4.4
-conda==4.10.3
-conda-package-handling @ file:///tmp/build/80754af9/conda-package-handling_1618262147379/work
-cryptography @ file:///tmp/build/80754af9/cryptography_1616767007030/work
 cycler==0.10.0
 debugpy==1.3.0
 decorator==5.0.9
@@ -46,7 +41,6 @@ grpcio==1.34.1
 gym==0.18.3
 h5py==3.1.0
 hiredis==2.0.0
-idna @ file:///home/linux1/recipes/ci/idna_1610986105248/work
 ipykernel==6.0.1
 ipython==7.25.0
 ipython-genutils==0.2.0
@@ -106,15 +100,12 @@ py-spy==0.3.7
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycosat==0.6.3
-pycparser @ file:///tmp/build/80754af9/pycparser_1594388511720/work
 pydantic==1.8.2
 pygame==2.0.1
 pyglet==1.5.15
 Pygments==2.9.0
-pyOpenSSL @ file:///tmp/build/80754af9/pyopenssl_1608057966937/work
 pyparsing==2.4.7
 pyrsistent==0.18.0
-PySocks @ file:///tmp/build/80754af9/pysocks_1605305812635/work
 python-dateutil==2.8.1
 pytz==2021.1
 PyYAML==5.4.1
@@ -123,16 +114,13 @@ qtconsole==5.1.1
 QtPy==1.9.0
 ray==1.4.1
 redis==3.5.3
-requests @ file:///tmp/build/80754af9/requests_1608241421344/work
 requests-oauthlib==1.3.0
 rsa==4.7.2
-ruamel-yaml-conda @ file:///tmp/build/80754af9/ruamel_yaml_1616016711199/work
 sacred==0.8.2
 scikit-learn==0.24.2
 scipy==1.7.0
 seaborn==0.11.1
 Send2Trash==1.7.1
-six @ file:///tmp/build/80754af9/six_1623709665295/work
 sklearn==0.0
 smmap==4.0.0
 stable-baselines==2.10.2
@@ -149,10 +137,8 @@ terminado==0.10.1
 testpath==0.5.0
 threadpoolctl==2.2.0
 tornado==6.1
-tqdm @ file:///tmp/build/80754af9/tqdm_1625563689033/work
 traitlets==5.0.5
 typing-extensions==3.7.4.3
-urllib3 @ file:///tmp/build/80754af9/urllib3_1625084269274/work
 wcwidth==0.2.5
 webencodings==0.5.1
 Werkzeug==2.0.1
