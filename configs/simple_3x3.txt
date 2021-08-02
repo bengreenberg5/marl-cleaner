@@ -6,6 +6,7 @@ env_config:
       XDDDX
       XDDAX
       XXXXX
+
 ray_config:
   framework: torch
   train_batch_size: 4000
@@ -17,6 +18,5 @@ ray_config:
   lr: 1.0e-5
   vf_loss_coeff: 1.0e-2
   gamma: 0.99
+
 run_config:
-  verbose: true
-  wandb_key_file: WANDB_TOKEN

@@ -44,3 +44,28 @@ def agent_pos_from_grid(grid):
     """
     agent_pos = np.where(grid["agent"])
     return [(agent_pos[0][i], agent_pos[1][i]) for i in range(len(agent_pos))]  # array of agent positions
+
+
+def trainer_from_params(params):
+    """
+    Returns a trainer object from a dict of params
+    """
+    pass # TODO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

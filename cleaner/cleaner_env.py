@@ -19,5 +19,5 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         done = self.game.is_done()
         return self.game.grid, reward, done, info
 
-    def render(self):
+    def render(self, mode=None):
         pass  # TODO
