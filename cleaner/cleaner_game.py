@@ -2,7 +2,7 @@ from collections import namedtuple
 from copy import deepcopy
 import numpy as np
 
-from utils import *
+from cleaner.utils import *
 
 
 class Position(namedtuple("Position", ["i", "j"])):
@@ -35,9 +35,7 @@ class Position(namedtuple("Position", ["i", "j"])):
         if isinstance(other, Position):
             return self.i == other.i and self.j == other.j
         if isinstance(other, (tuple, list)):
-            assert (
-                    len(other) == 2
-            ), "Position equality comparison must be with a length-2 sequence"
+            assert len(other) == 2, "Position equality comparison must be with a length-2 sequence"
             return self.i == other[0] and self.j == other[1]
         raise ValueError("A Position can only be compared with a Position-like item.")
 
@@ -58,9 +56,9 @@ class CleanerGame:
         clean_dirty_wall = self.grid["clean"] + self.grid["dirty"] + self.grid["wall"]
         agent_dirty_wall = self.grid["agent"] + self.grid["dirty"] + self.grid["wall"]
         clean_agent = self.grid["agent"] + self.grid["clean"]
-        assert(clean_dirty_wall.max() == 1, "position cannot contain more than one of ('clean', 'dirty', 'wall')")
-        assert(agent_dirty_wall.max() == 1, "position cannot contain more than one of ('agent', 'dirty', 'wall')")
-        assert(np.count_nonzero(clean_agent == 1) == 0, "position containing agent must be clean")
+        assert clean_dirty_wall.max() == 1, "position cannot contain more than one of ('clean', 'dirty', 'wall')"
+        assert agent_dirty_wall.max() == 1, "position cannot contain more than one of ('agent', 'dirty', 'wall')"
+        assert np.count_nonzero(clean_agent == 1) == 0, "position containing agent must be clean"
 
     def reset(self):
         self.grid = grid_from_layout(self.layout)

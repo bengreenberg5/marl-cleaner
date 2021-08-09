@@ -9,19 +9,18 @@ from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.trainer import COMMON_CONFIG
 from ray.tune.logger import UnifiedLogger
 
-
 MOVES = [
-    ( 0,  0),  # NOOP
-    (-1,  0),  # NORTH
-    ( 1,  0),  # SOUTH
-    ( 0, -1),  # WEST
-    ( 0,  1),  # EAST
+    (0, 0),  # NOOP
+    (-1, 0),  # NORTH
+    (1, 0),  # SOUTH
+    (0, -1),  # WEST
+    (0, 1),  # EAST
 ]
 MASKS = {
     "clean": 0,
     "dirty": 1,
     "agent": 2,
-    "wall":  3,
+    "wall": 3,
 }
 
 
@@ -40,11 +39,11 @@ def grid_from_config(config):
     layout = [list(line) for line in layout.split("\n")]
     height = len(layout)
     width = len(layout[0])
-    grid = { mask: np.zeros((height, width)) for mask in MASKS.keys()}
+    grid = {mask: np.zeros((height, width)) for mask in MASKS.keys()}
     grid["clean"][np.where(layout == "C")] = 1
     grid["dirty"][np.where(layout == "D")] = 1
     grid["agent"][np.where(layout == "A")] = 1
-    grid["wall"][ np.where(layout == "X")] = 1
+    grid["wall"][np.where(layout == "X")] = 1
     return grid
 
 
@@ -60,6 +59,7 @@ def trainer_from_config(config):
     """
     Returns a trainer object from a dict of params
     """
+
     def policy_config(policy_name):
         if policy_name == "dqn":
             return {
@@ -74,14 +74,14 @@ def trainer_from_config(config):
     action_space = Discrete(5)
     policies = config["policy_config"]
     multi_agent_config = {
-        "policies": (None, obs_space, action_space, policy_config(policy_name)
-                     for _, policy_name in config["policy_config"].items()),
-        # multi_agent_config['policy_mapping_fn'] = select_policy
-        # multi_agent_config['policies_to_train'] = 'ppo'
+        "policies": {
+            f"a{num}": (None, obs_space, action_space, policy_config(policy_name))
+            for num, policy_name in config["policy_config"].items()},
+        "policy_mapping_fn": lambda agent_id: agent_id,
     }
     trainer_config = {
         "multiagent": multi_agent_config,
-        "env_config" : config["env_config"],
+        "env_config": config["env_config"],
         **config["ray_config"],
         # "callbacks" : TrainingCallbacks,
     }
@@ -98,26 +98,10 @@ def save_trainer(trainer, config, path=None):
 
 
 def load_config(config_name):
+    fname = f"configs/{config_name}.yaml"
     try:
-        fname = f"configs/{config_name}.yaml"
         with open(fname, "r") as f:
             config = yaml.safe_load(f.read())
             return config
     except FileNotFoundError:
         print(f"bad config path: {fname}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

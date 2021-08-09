@@ -2,7 +2,7 @@ import gym
 from gym.spaces import Box, Discrete
 from ray.rllib.env import MultiAgentEnv
 
-from cleaner_game import *
+from cleaner.cleaner_game import *
 
 
 class CleanerEnv(MultiAgentEnv, gym.Env):
