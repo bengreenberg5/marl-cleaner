@@ -6,14 +6,16 @@ import yaml
 from cleaner.cleaner_env import *
 
 class ArgParser(BaseParser):
-    config: str
+    config: str = "simple_3x3"
+    training_iters: int = 5
+    checkpoint_freq: int = 1
 
     _help = {
         "config": "Path to the config of the experiment",
+        "training_iters": "Number of training iterations",
+        "checkpoint_freq": "How many training iterations between checkpoints. "
+                           "A value of 0 (default) disables checkpointing.",
         # "name": "Name of the run for checkpoints",
-        # "iters": "Number of training iterations",
-        # "checkpoint_freq": "How many training iterations between checkpoints. "
-        #                    "A value of 0 (default) disables checkpointing.",
         # "checkpoint_path": "Which checkpoint to load, if any",
         # "wandb_project": "What project name in wandb?",
     }
@@ -21,8 +23,7 @@ class ArgParser(BaseParser):
 
 def main():
     args = ArgParser()
-    with open(args.config, "r") as f:
-        config = yaml.load(f.read(), Loader=yaml.Loader)
+    config = load_config(args.config)
     env_config = config["env_config"]
     ray_config = config["ray_config"]
     run_config = config["run_config"]
@@ -41,7 +42,7 @@ def main():
             print(f"starting training iteration {i}")
         result = trainer.train()
 
-        if i % run_config["checkpoint_freq"] == 0:
+        if args.checkpoint_freq != 0 and i % args.checkpoint_freq == 0:
             save_path = save_trainer(trainer, config)
             if run_config["verbose"]:
                 print(f"saved trainer at {save_path}")

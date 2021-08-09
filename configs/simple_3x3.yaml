@@ -29,6 +29,9 @@ ray_config:
   evaluation_num_episodes: 5
   seed: 0
 
+policy_config:
+  0: dqn
+  1: dqn
+
 run_config:
   verbose: True
-  checkpoint_freq: 25
