@@ -18,7 +18,6 @@ ray_config:
   env: "ZSC-Cleaner"
   train_batch_size: 400
   rollout_fragment_length: 200
-  sgd_minibatch_size: 512
   num_sgd_iter: 3
   lambda: 0.92
   kl_coeff: 0.2

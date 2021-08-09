@@ -3,7 +3,8 @@ import dill
 import numpy as np
 import os
 import yaml
-from gym.spaces import Box, Discrete
+from gym.spaces import \
+    Box, Discrete
 
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.trainer import COMMON_CONFIG
@@ -70,7 +71,9 @@ def trainer_from_config(config):
             }
         raise NotImplemented(f"unknown policy {policy_name}")
 
-    obs_space = Box(0, 1, np.int32)
+    grid = grid_from_config(config)
+    layout_dims = (len(grid["clean"]), len(grid["clean"][0]))
+    obs_space = Box(0, 1, layout_dims, dtype=np.int32)
     action_space = Discrete(5)
     policies = config["policy_config"]
     multi_agent_config = {

@@ -1,4 +1,6 @@
 .idea
 .ipynb
 *.py[cod]
+*.sw[op]
+log/*
 todo.txt

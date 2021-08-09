@@ -8,7 +8,7 @@ from cleaner.cleaner_env import *
 class ArgParser(BaseParser):
     config: str = "simple_3x3"
     training_iters: int = 5
-    checkpoint_freq: int = 1
+    checkpoint_freq: int = 0
 
     _help = {
         "config": "Path to the config of the experiment",
