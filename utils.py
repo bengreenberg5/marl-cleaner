@@ -1,5 +1,10 @@
+from copy import deepcopy
+import dill
 import numpy as np
-
+import os
+from ray.rllib.agents.dqn import DQNTrainer
+from ray.rllib.agents.trainer import COMMON_CONFIG
+from ray.tune.logger import UnifiedLogger
 
 MOVES = [
     ( 0,  0),  # NOOP
@@ -46,13 +51,22 @@ def agent_pos_from_grid(grid):
     return [(agent_pos[0][i], agent_pos[1][i]) for i in range(len(agent_pos))]  # array of agent positions
 
 
-def trainer_from_params(params):
+def trainer_from_config(config):
     """
     Returns a trainer object from a dict of params
     """
-    pass # TODO
+    config = deepcopy(config)
+    config["multiagent"] = None  # TODO define DQN policy here
+    return DQNTrainer(config, "ZSC-Cleaner", logger_creator=lambda cfg: UnifiedLogger(cfg, "log"))
 
 
+def save_trainer(trainer, config, path=None):
+    save_path = trainer.save(path)
+    config = deepcopy(config)
+    config_path = os.path.join(os.path.dirname(save_path), "config.pkl")
+    with open(config_path, "wb") as f:
+        dill.dump(config, f)
+    return save_path
 
 
 
