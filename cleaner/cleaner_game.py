@@ -1,44 +1,7 @@
-from collections import namedtuple
 from copy import deepcopy
 import numpy as np
 
 from cleaner.utils import *
-
-
-class Position(namedtuple("Position", ["i", "j"])):
-    def __add__(self, other):
-        if isinstance(other, Position):
-            return Position(i=self.i + other.i, j=self.j + other.j)
-        elif isinstance(other, int):
-            return Position(i=self.i + other, j=self.j + other)
-        elif isinstance(other, tuple):
-            return Position(i=self.i + other[0], j=self.j + other[1])
-        else:
-            raise ValueError(
-                "A Position can only be added to an int or another Position"
-            )
-
-    def __sub__(self, other):
-        if isinstance(other, Position):
-            return Position(i=self.i - other.i, j=self.j - other.j)
-        elif isinstance(other, int):
-            return Position(i=self.i - other, j=self.j - other)
-        elif isinstance(other, tuple):
-            return Position(i=self.i - other[0], j=self.j - other[1])
-        else:
-            raise ValueError(
-                "A Position can only be added to an int or another Position"
-            )
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, Position):
-            return self.i == other.i and self.j == other.j
-        if isinstance(other, (tuple, list)):
-            assert (
-                len(other) == 2
-            ), "Position equality comparison must be with a length-2 sequence"
-            return self.i == other[0] and self.j == other[1]
-        raise ValueError("A Position can only be compared with a Position-like item.")
 
 
 class CleanerGame:
@@ -70,14 +33,19 @@ class CleanerGame:
     def reset(self):
         self.grid = grid_from_layout(self.layout)
         self.agent_pos = agent_pos_from_grid(self.grid)
-        return self.grid
+        return self.agent_obs()
 
     def is_done(self):
-        return self.grid["clean"].sum().sum() == 0
+        done = self.grid["clean"].sum().sum() == 0
+        return {"__all__": done}
+
+    def agent_obs(self):
+        obs = np.stack([self.grid[layer] for layer in ["clean", "dirty", "agent", "wall"]], axis=-1)
+        return {agent: obs for agent in self.agent_pos.keys()}
 
     def step(self, actions):
         reward = 0
-        for agent, action in enumerate(actions):
+        for agent, action in actions.items():
             new_pos = self.agent_pos[agent] + MOVES[action]
             if self.grid["wall"][new_pos]:
                 continue
@@ -87,7 +55,7 @@ class CleanerGame:
                 self.grid["clean"][new_pos] = 1
                 self.grid["agent"][new_pos] = 1
             self.agent_pos[agent] = new_pos
-        return reward
+        return {agent: reward for agent in self.agent_pos.keys()}
 
     def render(self, fig=None, ax=None):
         pass  # TODO

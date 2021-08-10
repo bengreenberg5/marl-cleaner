@@ -1,7 +1,6 @@
 import ray
 from ray.tune import register_env
 from typarse import BaseParser
-import yaml
 
 from cleaner.cleaner_env import *
 
@@ -53,6 +52,8 @@ def main():
     save_path = save_trainer(trainer, config)
     if run_config["verbose"]:
         print(f"saved trainer at {save_path}")
+
+    ray.shutdown()
 
 
 if __name__ == "__main__":

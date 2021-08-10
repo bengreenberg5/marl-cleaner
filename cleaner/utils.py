@@ -3,18 +3,55 @@ import dill
 import numpy as np
 import os
 import yaml
+from collections import namedtuple
 from gym.spaces import Box, Discrete
-
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.trainer import COMMON_CONFIG
 from ray.tune.logger import UnifiedLogger
 
+
+class Position(namedtuple("Position", ["i", "j"])):
+    def __add__(self, other):
+        if isinstance(other, Position):
+            return Position(i=self.i + other.i, j=self.j + other.j)
+        elif isinstance(other, int):
+            return Position(i=self.i + other, j=self.j + other)
+        elif isinstance(other, tuple):
+            return Position(i=self.i + other[0], j=self.j + other[1])
+        else:
+            raise ValueError(
+                "A Position can only be added to an int or another Position"
+            )
+
+    def __sub__(self, other):
+        if isinstance(other, Position):
+            return Position(i=self.i - other.i, j=self.j - other.j)
+        elif isinstance(other, int):
+            return Position(i=self.i - other, j=self.j - other)
+        elif isinstance(other, tuple):
+            return Position(i=self.i - other[0], j=self.j - other[1])
+        else:
+            raise ValueError(
+                "A Position can only be added to an int or another Position"
+            )
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, Position):
+            return self.i == other.i and self.j == other.j
+        if isinstance(other, (tuple, list)):
+            assert (
+                    len(other) == 2
+            ), "Position equality comparison must be with a length-2 sequence"
+            return self.i == other[0] and self.j == other[1]
+        raise ValueError("A Position can only be compared with a Position-like item.")
+
+
 MOVES = [
-    (0, 0),  # NOOP
-    (-1, 0),  # NORTH
-    (1, 0),  # SOUTH
-    (0, -1),  # WEST
-    (0, 1),  # EAST
+    Position(0, 0),  # NOOP
+    Position(-1, 0),  # NORTH
+    Position(1, 0),  # SOUTH
+    Position(0, -1),  # WEST
+    Position(0, 1),  # EAST
 ]
 MASKS = {
     "clean": 0,
@@ -57,9 +94,9 @@ def agent_pos_from_grid(grid):
     Returns a tuple of agent positions from the grid -- top to bottom, left to right
     """
     agent_pos = np.where(grid["agent"])
-    return [
-        (agent_pos[0][i], agent_pos[1][i]) for i in range(len(agent_pos))
-    ]  # array of agent positions
+    return {
+        f"a{num}": Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos))
+    }
 
 
 def trainer_from_config(config):
@@ -76,8 +113,8 @@ def trainer_from_config(config):
         raise NotImplemented(f"unknown policy {policy_name}")
 
     grid = grid_from_config(config)
-    layout_dims = (len(grid["clean"]), len(grid["clean"][0]))
-    obs_space = Box(0, 1, layout_dims, dtype=np.int32)
+    obs_dims = (len(grid["clean"]), len(grid["clean"][0]), 4)
+    obs_space = Box(0, 1, obs_dims, dtype=np.int32)
     action_space = Discrete(5)
     policies = config["policy_config"]
     multi_agent_config = {
@@ -87,8 +124,16 @@ def trainer_from_config(config):
         },
         "policy_mapping_fn": lambda agent_id: agent_id,
     }
+    model_config = {
+        "dim": 3,
+        "conv_filters": [
+            [16, [2, 2], 1],
+            [32, [5, 5], 1],
+        ],
+    }
     trainer_config = {
         "multiagent": multi_agent_config,
+        "model": model_config,
         "env_config": config["env_config"],
         **config["ray_config"],
         # "callbacks" : TrainingCallbacks,
