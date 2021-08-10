@@ -99,7 +99,7 @@ def agent_pos_from_grid(grid):
     }
 
 
-def trainer_from_config(config):
+def trainer_from_config(config, results_dir):
     """
     Returns a trainer object from a dict of params
     """
@@ -141,16 +141,18 @@ def trainer_from_config(config):
     return DQNTrainer(
         trainer_config,
         "ZSC-Cleaner",
-        logger_creator=lambda cfg: UnifiedLogger(cfg, "log"),
+        logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
     )
 
 
-def save_trainer(trainer, config, path=None):
+def save_trainer(trainer, config, path=None, verbose=True):
     save_path = trainer.save(path)
     config = deepcopy(config)
     config_path = os.path.join(os.path.dirname(save_path), "config.pkl")
     with open(config_path, "wb") as f:
         dill.dump(config, f)
+    if verbose:
+        print(f"saved trainer at {save_path}")
     return save_path
 
 
