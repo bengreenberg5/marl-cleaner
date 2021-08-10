@@ -3,8 +3,7 @@ import dill
 import numpy as np
 import os
 import yaml
-from gym.spaces import \
-    Box, Discrete
+from gym.spaces import Box, Discrete
 
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.trainer import COMMON_CONFIG
@@ -53,7 +52,9 @@ def agent_pos_from_grid(grid):
     Returns a tuple of agent positions from the grid -- top to bottom, left to right
     """
     agent_pos = np.where(grid["agent"])
-    return [(agent_pos[0][i], agent_pos[1][i]) for i in range(len(agent_pos))]  # array of agent positions
+    return [
+        (agent_pos[0][i], agent_pos[1][i]) for i in range(len(agent_pos))
+    ]  # array of agent positions
 
 
 def trainer_from_config(config):
@@ -79,7 +80,8 @@ def trainer_from_config(config):
     multi_agent_config = {
         "policies": {
             f"a{num}": (None, obs_space, action_space, policy_config(policy_name))
-            for num, policy_name in config["policy_config"].items()},
+            for num, policy_name in config["policy_config"].items()
+        },
         "policy_mapping_fn": lambda agent_id: agent_id,
     }
     trainer_config = {
@@ -88,7 +90,11 @@ def trainer_from_config(config):
         **config["ray_config"],
         # "callbacks" : TrainingCallbacks,
     }
-    return DQNTrainer(trainer_config, "ZSC-Cleaner", logger_creator=lambda cfg: UnifiedLogger(cfg, "log"))
+    return DQNTrainer(
+        trainer_config,
+        "ZSC-Cleaner",
+        logger_creator=lambda cfg: UnifiedLogger(cfg, "log"),
+    )
 
 
 def save_trainer(trainer, config, path=None):

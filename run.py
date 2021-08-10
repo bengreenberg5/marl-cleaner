@@ -5,6 +5,7 @@ import yaml
 
 from cleaner.cleaner_env import *
 
+
 class ArgParser(BaseParser):
     config: str = "simple_3x3"
     training_iters: int = 5
@@ -14,7 +15,7 @@ class ArgParser(BaseParser):
         "config": "Path to the config of the experiment",
         "training_iters": "Number of training iterations",
         "checkpoint_freq": "How many training iterations between checkpoints. "
-                           "A value of 0 (default) disables checkpointing.",
+        "A value of 0 (default) disables checkpointing.",
         # "name": "Name of the run for checkpoints",
         # "checkpoint_path": "Which checkpoint to load, if any",
         # "wandb_project": "What project name in wandb?",

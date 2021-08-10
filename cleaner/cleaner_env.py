@@ -6,7 +6,6 @@ from cleaner.cleaner_game import *
 
 
 class CleanerEnv(MultiAgentEnv, gym.Env):
-    
     def __init__(self, env_config):
         super().__init__()
         self.game = CleanerGame(**env_config)
