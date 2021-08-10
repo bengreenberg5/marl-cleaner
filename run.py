@@ -2,6 +2,7 @@ import os
 import ray
 from ray.tune import register_env
 from typarse import BaseParser
+import wandb
 
 from cleaner.cleaner_env import *
 
@@ -19,7 +20,6 @@ class ArgParser(BaseParser):
         "checkpoint_freq": "How many training iterations between checkpoints; "
                            "a value of 0 (default) disables checkpointing.",
         # "checkpoint_path": "Which checkpoint to load, if any",
-        # "wandb_project": "What project name in wandb?",
     }
 
 
@@ -29,6 +29,14 @@ def main():
     env_config = config["env_config"]
     ray_config = config["ray_config"]
     run_config = config["run_config"]
+
+    wandb.init(
+        project=run_config["wandb_project"],
+        entity=os.environ["USERNAME"],
+        config=config,
+        monitor_gym=True,
+        sync_tensorboard=True,
+    )  # integrate with Weights & Biases
 
     ray.shutdown()
     ray.init()

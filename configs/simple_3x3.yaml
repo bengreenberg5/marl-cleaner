@@ -29,3 +29,4 @@ policy_config:
 
 run_config:
   verbose: True
+  wandb_project: zsc-cleaner

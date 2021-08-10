@@ -3,4 +3,5 @@
 *.py[cod]
 *.sw[op]
 log/*
+wandb/*
 todo.txt
