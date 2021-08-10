@@ -29,6 +29,7 @@ def main():
     ray_config = config["ray_config"]
     run_config = config["run_config"]
 
+    ray.shutdown()
     ray.init()
     register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config))
 
@@ -38,7 +39,7 @@ def main():
     result = {}
 
     # Training loop
-    for i in range(run_config["num_training_iters"]):
+    for i in range(args.training_iters):
         if run_config["verbose"]:
             print(f"starting training iteration {i}")
         result = trainer.train()

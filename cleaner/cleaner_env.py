@@ -9,11 +9,12 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
     def __init__(self, env_config):
         super().__init__()
         self.game = CleanerGame(**env_config)
-        self.observation_space = Box(0, 1, dtype=np.int32)
+        self.observation_space = Box(0, 1, self.game.size, dtype=np.int32)
         self.action_space = Discrete(5)
 
     def reset(self):
-        self.game.reset()
+        obs = self.game.reset()
+        return obs
 
     def step(self, actions):
         reward = self.game.step(actions)

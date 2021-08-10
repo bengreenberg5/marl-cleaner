@@ -69,6 +69,8 @@ class CleanerGame:
 
     def reset(self):
         self.grid = grid_from_layout(self.layout)
+        self.agent_pos = agent_pos_from_grid(self.grid)
+        return self.grid
 
     def is_done(self):
         return self.grid["clean"].sum().sum() == 0

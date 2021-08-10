@@ -25,6 +25,11 @@ MASKS = {
 
 
 def grid_from_config(config):
+    layout = config["env_config"]["layout"]
+    return grid_from_layout(layout)
+
+
+def grid_from_layout(layout):
     """
     Converts human-readable layout to grid format used internally by CleanerGame
 
@@ -35,12 +40,12 @@ def grid_from_config(config):
     XXXXX         [0 0 0 0 0]    [0 0 0 0 0]    [0 0 0 0 0]    [1 1 1 1 1]
     '''         }
     """
-    layout = config["env_config"]["layout"]
-    layout = [list(line) for line in layout.split("\n")]
+    layout = np.array([list(line) for line in layout.rstrip("\n").split("\n")])
     height = len(layout)
     width = len(layout[0])
     grid = {mask: np.zeros((height, width)) for mask in MASKS.keys()}
     grid["clean"][np.where(layout == "C")] = 1
+    grid["clean"][np.where(layout == "A")] = 1
     grid["dirty"][np.where(layout == "D")] = 1
     grid["agent"][np.where(layout == "A")] = 1
     grid["wall"][np.where(layout == "X")] = 1
@@ -64,12 +69,10 @@ def trainer_from_config(config):
 
     def policy_config(policy_name):
         if policy_name == "dqn":
-            return {
-                "model": {
-                    "custom_options": config["model_config"],
-                    # "custom_model": "MyPPOModel"
-                }
-            }
+            # return { "model": {
+            #         "custom_options": config["model_config"],
+            #     }}
+            return {}
         raise NotImplemented(f"unknown policy {policy_name}")
 
     grid = grid_from_config(config)
