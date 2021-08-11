@@ -1,8 +1,15 @@
-import os
-import ray
-from ray.tune import register_env
+from collections import defaultdict
+from typing import Dict, Optional
+
+from ray.rllib.evaluation import MultiAgentEpisode
+from ray.rllib.utils.typing import PolicyID
 from typarse import BaseParser
 import wandb
+
+import ray
+from ray.rllib import RolloutWorker, BaseEnv, Policy
+from ray.rllib.agents import DefaultCallbacks
+from ray.tune import register_env
 
 from cleaner.cleaner_env import *
 
@@ -19,7 +26,6 @@ class ArgParser(BaseParser):
         "training_iters": "Number of training iterations",
         "checkpoint_freq": "How many training iterations between checkpoints; "
                            "a value of 0 (default) disables checkpointing.",
-        # "checkpoint_path": "Which checkpoint to load, if any",
     }
 
 
@@ -30,20 +36,21 @@ def main():
     ray_config = config["ray_config"]
     run_config = config["run_config"]
 
-    wandb.init(
-        project=run_config["wandb_project"],
-        entity=os.environ["USERNAME"],
-        config=config,
-        monitor_gym=True,
-        sync_tensorboard=True,
-    )  # integrate with Weights & Biases
-
     ray.shutdown()
     ray.init()
     register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config))
 
     results_dir = f"{os.path.expanduser('~')}/ray_results/{args.name}/"
     trainer = trainer_from_config(config, results_dir=results_dir)
+
+    wandb.init(
+        project=run_config["wandb_project"],
+        entity=os.environ["USERNAME"],
+        config=config,
+        monitor_gym=True,
+        sync_tensorboard=True,
+        reinit=True,
+    )  # integrate with Weights & Biases
 
     verbose = run_config["verbose"]
 

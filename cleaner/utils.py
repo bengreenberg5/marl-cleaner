@@ -1,12 +1,20 @@
+from collections import namedtuple
 from copy import deepcopy
 import dill
+from gym.spaces import Box, Discrete
+import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import os
+from typing import Dict, Optional
 import yaml
-from collections import namedtuple
-from gym.spaces import Box, Discrete
+
+from ray.rllib import RolloutWorker, BaseEnv, Policy
+from ray.rllib.agents import DefaultCallbacks
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.trainer import COMMON_CONFIG
+from ray.rllib.evaluation import MultiAgentEpisode
+from ray.rllib.utils.typing import PolicyID
 from ray.tune.logger import UnifiedLogger
 
 
@@ -44,6 +52,52 @@ class Position(namedtuple("Position", ["i", "j"])):
             ), "Position equality comparison must be with a length-2 sequence"
             return self.i == other[0] and self.j == other[1]
         raise ValueError("A Position can only be compared with a Position-like item.")
+
+
+class CleanerCallbacks(DefaultCallbacks):
+    def __init__(self):
+        super().__init__()
+
+    def on_episode_start(
+            self,
+            *,
+            worker: RolloutWorker,
+            base_env: BaseEnv,
+            policies: Dict[PolicyID, Policy],
+            episode: MultiAgentEpisode,
+            env_index: Optional[int] = None,
+            **kwargs,
+    ) -> None:
+        episode.user_data["rewards"] = list()
+
+    def on_episode_step(
+            self,
+            *,
+            worker: RolloutWorker,
+            base_env: BaseEnv,
+            episode: MultiAgentEpisode,
+            env_index: Optional[int] = None,
+            **kwargs,
+    ) -> None:
+        rewards = {}
+        for agent in base_env.get_unwrapped()[0].game.agent_pos.keys():
+            rewards[agent] = episode.prev_reward_for(agent)
+        episode.user_data["rewards"].append(rewards)
+
+    def on_episode_end(
+            self,
+            *,
+            worker: RolloutWorker,
+            base_env: BaseEnv,
+            policies: Dict[PolicyID, Policy],
+            episode: MultiAgentEpisode,
+            env_index: Optional[int] = None,
+            **kwargs,
+    ) -> None:
+        # custom metrics get saved to the logfile
+        episode.custom_metrics["rewards"] = sum(
+            [sum(list(rewards.values())) for rewards in episode.user_data["rewards"]]
+        )
 
 
 MOVES = [
@@ -89,6 +143,18 @@ def grid_from_layout(layout):
     return grid
 
 
+def grid_3d_to_2d(grid):
+    """
+    Squashes 4 layers into 1
+    """
+    board = np.zeros(grid["clean"].shape)
+    board[np.where(grid["clean"])] = 0
+    board[np.where(grid["dirty"])] = 1
+    board[np.where(grid["agent"])] = 2
+    board[np.where(grid["wall"])] = 3
+    return board
+
+
 def agent_pos_from_grid(grid):
     """
     Returns a tuple of agent positions from the grid -- top to bottom, left to right
@@ -131,18 +197,46 @@ def trainer_from_config(config, results_dir):
             [32, [5, 5], 1],
         ],
     }
+    eval_config = {
+        "verbose": True
+    }
     trainer_config = {
         "multiagent": multi_agent_config,
         "model": model_config,
         "env_config": config["env_config"],
+        "callbacks": CleanerCallbacks,
+        "evaluation_config": eval_config,
         **config["ray_config"],
-        # "callbacks" : TrainingCallbacks,
     }
+
     return DQNTrainer(
         trainer_config,
         "ZSC-Cleaner",
         logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
     )
+
+
+def evaluate(self, checkpoint_dir):
+    """
+    Records a video of the loaded checkpoint.
+    """
+
+    video_filename = f"{checkpoint_dir}/video.mp4"
+    images = []
+    done = {"__all__": False}
+    while not done["__all__"]:
+        actions = {}
+        for agent in self.game.agent_pos.keys():
+            actions[agent] = self.trainer.compute_action(
+                observation=self.game.get_agents_obs()[agent],
+                policy_id=agent,
+            )
+        self.step(actions)
+    ani = animation.ArtistAnimation(
+        fig, images, interval=50, blit=True, repeat_delay=10000
+    )
+    ani.save(filename)
+    print(f"Successfully wrote {filename}")
 
 
 def save_trainer(trainer, config, path=None, verbose=True):

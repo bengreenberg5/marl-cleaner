@@ -11,6 +11,8 @@ class CleanerGame:
         self.grid = grid_from_layout(layout)  # masks for environment features
         self.agent_pos = agent_pos_from_grid(self.grid)  # tuples of agent positions
         self.num_agents = len(self.agent_pos)  # number of agents in environment
+        self.tick = 0  # current time step
+        self.tick_limit = 200  # how many time steps before game ends
         self._validate_grid()
 
     def __repr__(self):
@@ -33,10 +35,11 @@ class CleanerGame:
     def reset(self):
         self.grid = grid_from_layout(self.layout)
         self.agent_pos = agent_pos_from_grid(self.grid)
+        self.tick = 0
         return self.agent_obs()
 
     def is_done(self):
-        done = self.grid["clean"].sum().sum() == 0
+        done = self.tick == self.tick_limit or self.grid["clean"].sum().sum() == 0
         return {"__all__": done}
 
     def agent_obs(self):
@@ -55,7 +58,13 @@ class CleanerGame:
                 self.grid["clean"][new_pos] = 1
                 self.grid["agent"][new_pos] = 1
             self.agent_pos[agent] = new_pos
+        self.tick += 1
         return {agent: reward for agent in self.agent_pos.keys()}
 
     def render(self, fig=None, ax=None):
-        pass  # TODO
+        cmap = matplotlib.colors.ListedColormap(["green", "red", "white", "grey"])
+        fig, ax = plt.subplots()
+        board = grid_3d_to_2d(self.grid)
+        # board[0, 0] = 4
+        im = ax.imshow(board, cmap=cmap)
+        return im
