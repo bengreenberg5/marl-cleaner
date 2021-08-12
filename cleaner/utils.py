@@ -216,29 +216,6 @@ def trainer_from_config(config, results_dir):
     )
 
 
-def evaluate(self, checkpoint_dir):
-    """
-    Records a video of the loaded checkpoint.
-    """
-
-    video_filename = f"{checkpoint_dir}/video.mp4"
-    images = []
-    done = {"__all__": False}
-    while not done["__all__"]:
-        actions = {}
-        for agent in self.game.agent_pos.keys():
-            actions[agent] = self.trainer.compute_action(
-                observation=self.game.get_agents_obs()[agent],
-                policy_id=agent,
-            )
-        self.step(actions)
-    ani = animation.ArtistAnimation(
-        fig, images, interval=50, blit=True, repeat_delay=10000
-    )
-    ani.save(filename)
-    print(f"Successfully wrote {filename}")
-
-
 def save_trainer(trainer, config, path=None, verbose=True):
     save_path = trainer.save(path)
     config = deepcopy(config)

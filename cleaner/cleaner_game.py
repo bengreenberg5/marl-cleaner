@@ -63,7 +63,8 @@ class CleanerGame:
 
     def render(self, fig=None, ax=None):
         cmap = matplotlib.colors.ListedColormap(["green", "red", "white", "grey"])
-        fig, ax = plt.subplots()
+        if not fig or not ax:
+            fig, ax = plt.subplots()
         board = grid_3d_to_2d(self.grid)
         # board[0, 0] = 4
         im = ax.imshow(board, cmap=cmap)

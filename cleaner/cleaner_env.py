@@ -24,5 +24,5 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         info = {agent: {} for agent in agents}
         return self.game.agent_obs(), reward, done, info
 
-    def render(self, mode=None):
-        pass  # TODO
+    def render(self, fig=None, ax=None, mode=None):
+        return self.game.render(fig, ax)

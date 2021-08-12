@@ -29,6 +29,37 @@ class ArgParser(BaseParser):
     }
 
 
+def evaluate(config, checkpoint_path, record=True):
+    results_dir = "tmp"  # TODO
+    trainer = trainer_from_config(config, results_dir)
+    done = {"__all__": False}
+    env = CleanerEnv(config["env_config"])
+    fig, ax = plt.subplots()
+    images = []
+
+    while not done["__all__"]:
+        actions = {}
+        for agent in env.game.agent_pos.keys():
+            actions[agent] = trainer.compute_action(
+                observation=env.game.get_agents_obs()[agent],
+                policy_id=agent,
+            )
+        env.step(actions)
+        if record:
+            im = env.game.render(fig, ax)
+            images.append([im])
+
+    if record:
+        video_filename = f"{checkpoint_path}/video.mp4"
+        ani = animation.ArtistAnimation(
+            fig, images, interval=50, blit=True, repeat_delay=10000
+        )
+        ani.save(filename)
+        print(f"Successfully wrote {filename}")
+
+    # TODO print summary statistics
+
+
 def main():
     args = ArgParser()
     config = load_config(args.config)
