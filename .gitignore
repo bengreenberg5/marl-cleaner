@@ -1,7 +1,9 @@
 .idea
-.ipynb
+*.ipynb_checkpoints
 *.py[cod]
 *.sw[op]
 log/*
+runs/*
+tmp/*
 wandb/*
 todo.txt

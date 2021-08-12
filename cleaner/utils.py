@@ -113,6 +113,12 @@ MASKS = {
     "agent": 2,
     "wall": 3,
 }
+COLORS = matplotlib.colors.ListedColormap([
+    "green",  # clean (and no agent)
+    "red",    # dirty
+    "white",  # agent
+    "grey"    # wall
+])
 
 
 def grid_from_config(config):
@@ -172,9 +178,7 @@ def trainer_from_config(config, results_dir):
 
     def policy_config(policy_name):
         if policy_name == "dqn":
-            # return { "model": {
-            #         "custom_options": config["model_config"],
-            #     }}
+            # return {"model": {"custom_options": config["model_config"]}}
             return {}
         raise NotImplemented(f"unknown policy {policy_name}")
 

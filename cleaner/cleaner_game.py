@@ -39,7 +39,7 @@ class CleanerGame:
         return self.agent_obs()
 
     def is_done(self):
-        done = self.tick == self.tick_limit or self.grid["clean"].sum().sum() == 0
+        done = self.tick == self.tick_limit or self.grid["dirty"].sum().sum() == 0
         return {"__all__": done}
 
     def agent_obs(self):
@@ -49,23 +49,24 @@ class CleanerGame:
     def step(self, actions):
         reward = 0
         for agent, action in actions.items():
-            new_pos = self.agent_pos[agent] + MOVES[action]
+            pos = self.agent_pos[agent]
+            new_pos = pos + MOVES[action]
             if self.grid["wall"][new_pos]:
                 continue
+            self.grid["agent"][pos] = 0
+            self.grid["agent"][new_pos] = 1
             if self.grid["dirty"][new_pos]:
                 reward += 1
                 self.grid["dirty"][new_pos] = 0
                 self.grid["clean"][new_pos] = 1
-                self.grid["agent"][new_pos] = 1
             self.agent_pos[agent] = new_pos
         self.tick += 1
         return {agent: reward for agent in self.agent_pos.keys()}
 
     def render(self, fig=None, ax=None):
-        cmap = matplotlib.colors.ListedColormap(["green", "red", "white", "grey"])
         if not fig or not ax:
             fig, ax = plt.subplots()
         board = grid_3d_to_2d(self.grid)
         # board[0, 0] = 4
-        im = ax.imshow(board, cmap=cmap)
+        im = ax.imshow(board, cmap=COLORS)
         return im
