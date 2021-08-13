@@ -197,8 +197,8 @@ def trainer_from_config(config, results_dir):
     model_config = {
         "dim": 3,
         "conv_filters": [
-            [16, [2, 2], 1],
-            [32, [5, 5], 1],
+            [16, [3, 3], 1],
+            [32, [12, 12], 1],
         ],
     }
     eval_config = {

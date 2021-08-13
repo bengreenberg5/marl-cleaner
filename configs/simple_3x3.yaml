@@ -6,6 +6,7 @@ env_config:
       XDDDX
       XDDAX
       XXXXX
+  tick_limit: 50
 
 model_config:
   num_hidden_layers:

@@ -5,14 +5,14 @@ from cleaner.utils import *
 
 
 class CleanerGame:
-    def __init__(self, layout):
+    def __init__(self, layout, tick_limit):
         self.layout = layout  # human-readable layout
+        self.tick_limit = tick_limit  # how many time steps before game ends
         self.size = (len(layout), len(layout[0]))  # height and width of grid
         self.grid = grid_from_layout(layout)  # masks for environment features
         self.agent_pos = agent_pos_from_grid(self.grid)  # tuples of agent positions
         self.num_agents = len(self.agent_pos)  # number of agents in environment
         self.tick = 0  # current time step
-        self.tick_limit = 200  # how many time steps before game ends
         self._validate_grid()
 
     def __repr__(self):

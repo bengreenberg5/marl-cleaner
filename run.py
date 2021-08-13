@@ -70,7 +70,6 @@ def evaluate(config, run_name, checkpoint_num, record=True):
     # TODO print summary stats
 
 
-
 def main():
     args = ArgParser()
     config = load_config(args.config)
