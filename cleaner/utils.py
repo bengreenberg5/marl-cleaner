@@ -12,6 +12,7 @@ import yaml
 from ray.rllib import RolloutWorker, BaseEnv, Policy
 from ray.rllib.agents import DefaultCallbacks
 from ray.rllib.agents.dqn import DQNTrainer
+from ray.rllib.agents.ppo import PPOTrainer
 from ray.rllib.agents.trainer import COMMON_CONFIG
 from ray.rllib.evaluation import MultiAgentEpisode
 from ray.rllib.utils.typing import PolicyID
@@ -213,7 +214,7 @@ def trainer_from_config(config, results_dir):
         **config["ray_config"],
     }
 
-    return DQNTrainer(
+    return PPOTrainer(
         trainer_config,
         "ZSC-Cleaner",
         logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
