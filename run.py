@@ -22,7 +22,7 @@ class ArgParser(BaseParser):
     name: str = "cleaner"
     training_iters: int = 5
     checkpoint_freq: int = 25
-    eval_freq: int = 50
+    eval_freq: int = 25
 
     _help = {
         "config":           "Path to the config of the experiment",
@@ -106,6 +106,7 @@ def main():
             evaluate(config, args.name, i+1, record=True)
 
     save_trainer(trainer, config, path=results_dir, verbose=verbose)
+    evaluate(config, args.name, args.training_iters, record=True)
 
     ray.shutdown()
 

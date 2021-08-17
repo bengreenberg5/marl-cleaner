@@ -198,18 +198,19 @@ def trainer_from_config(config, results_dir):
     model_config = {
         "dim": 3,
         "conv_filters": [
-            [16, [3, 3], 1],
-            [32, [12, 12], 1],
+            [16, [3, 3], 2],
+            [32, [4, 4], 1],
         ],
+        "conv_activation": "relu",
     }
     eval_config = {
         "verbose": True
     }
     trainer_config = {
         "multiagent": multi_agent_config,
-        "model": model_config,
+        # "model": model_config,
         "env_config": config["env_config"],
-        "callbacks": CleanerCallbacks,
+        "callbacks": DefaultCallbacks,
         "evaluation_config": eval_config,
         **config["ray_config"],
     }
