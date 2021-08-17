@@ -45,6 +45,9 @@ def evaluate(config, run_name, checkpoint_num, record=True):
     images = []
 
     while not done["__all__"]:
+        if record:
+            im = env.game.render(fig, ax)
+            images.append([im])
         actions = {}
         for agent in env.game.agent_pos.keys():
             actions[agent] = trainer.compute_action(
@@ -52,9 +55,6 @@ def evaluate(config, run_name, checkpoint_num, record=True):
                 policy_id=agent,
             )
         _, _, done, _ = env.step(actions)
-        if record:
-            im = env.game.render(fig, ax)
-            images.append([im])
 
     if record:
         video_filename = f"{'/'.join(checkpoint_path.split('/')[:-1])}/video.mp4"
