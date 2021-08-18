@@ -6,12 +6,15 @@ from cleaner.cleaner_game import *
 
 
 class CleanerEnv(MultiAgentEnv, gym.Env):
-    def __init__(self, env_config):
+    def __init__(self, env_config, run_name, agent_names=None):
         super().__init__()
         self.game = CleanerGame(**env_config)
-        self.agents = [f"a{num}" for num in range(self.game.num_agents)]
         self.observation_space = Box(0, 1, self.game.agent_obs()["a0"].shape, dtype=np.int32)
         self.action_space = Discrete(5)
+        if agent_names is None:
+            self.agent_names = [f"{run_name}:{num}" for num in range(self.game.num_agents)]
+        else:
+            self.agent_names = agent_names
 
     def reset(self):
         grid = self.game.reset()

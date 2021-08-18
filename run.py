@@ -33,41 +33,64 @@ class ArgParser(BaseParser):
     }
 
 
-def evaluate(config, run_name, checkpoint_num, record=True):
-    results_dir = f"{os.path.expanduser('~')}/ray_results"
-    checkpoint_path = f"{results_dir}/{run_name}/checkpoint_{str(checkpoint_num).zfill(6)}/checkpoint-{checkpoint_num}"
-    trainer = trainer_from_config(config, results_dir="tmp")
-    trainer.restore(checkpoint_path)
+def evaluate(eval_config, record=True):
+    """
+    eval_config = {
+        "agents": [  # run_name, agent_num, checkpoint_num
+            ("ppo5", 0, 1000),
+            ("ppo5", 1, 1000),
+        ],
+        "env_config": {
+            layout: '''
+                    XXXXXXX
+                    XADDDDX
+                    XDDDDDX
+                    XDDDDDX
+                    XDDDDDX
+                    XDDDDAX
+                    XXXXXXX
+                    ''',
+            tick_limit: 12,
+        },
+        "eval_name": "my_eval",
+    }
+    """
+    agents = {}
+    trainers = {}
+    for run_name, agent_num, checkpoint_num in agents:
+        agent = Agent(run_name, agent_num)
+        agents[agent.name] = agent
+        trainer = agent.get_trainer(checkpoint_num)
+        trainers[agent.name] = trainer
 
     done = {"__all__": False}
-    env = CleanerEnv(config["env_config"])
+    env = CleanerEnv(eval_config["env_config"], run_name=eval_config["eval_name"], agent_names=list(agents.keys()))
     fig, ax = plt.subplots()
     images = []
 
+    # run episode
+    rewards = []
+    actions = {}
     while not done["__all__"]:
         if record:
             im = env.game.render(fig, ax)
             images.append([im])
-        actions = {}
-        for agent in env.game.agent_pos.keys():
-            actions[agent] = trainer.compute_action(
-                observation=env.game.agent_obs()[agent],
-                policy_id=agent,
+        for agent_name in agents.keys():
+            actions[agent_name] = trainers[agent_name].compute_action(
+                observation=env.game.agent_obs()[agent_name],
+                policy_id=agent_name,
             )
-        _, _, done, _ = env.step(actions)
+        _, reward, done, _ = env.step(actions)
+        rewards.append(reward)
+    print(f"episode reward: {sum(rewards)}")
 
     if record:
-        video_filename = f"{'/'.join(checkpoint_path.split('/')[:-1])}/video.mp4"
-        # f = open(video_filename, "w")  # touch file
-        # os.chmod(video_filename, stat.S_IRWXO | stat.S_IRWXG | stat.S_IRWXU)
-        # f.close()
+        video_filename = f"{RAY_DIR}/{eval_config['eval_name']}/video.mp4"
         ani = animation.ArtistAnimation(
-            fig, images, interval=25, blit=True, repeat_delay=10000
+            fig, images, interval=200, blit=True, repeat_delay=10000
         )
         ani.save(video_filename)
         print(f"saved video at {video_filename}")
-
-    # TODO print summary stats
 
 
 def main():
@@ -79,7 +102,7 @@ def main():
 
     ray.shutdown()
     ray.init()
-    register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config))
+    register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config, run_name=args.name))
 
     results_dir = f"{os.path.expanduser('~')}/ray_results/{args.name}/"
     trainer = trainer_from_config(config, results_dir=results_dir)

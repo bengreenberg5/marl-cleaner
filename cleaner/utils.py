@@ -120,6 +120,7 @@ COLORS = matplotlib.colors.ListedColormap([
     "white",  # agent
     "grey"    # wall
 ])
+RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
 
 
 def grid_from_config(config):
