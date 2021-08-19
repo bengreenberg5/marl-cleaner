@@ -175,60 +175,14 @@ def agent_pos_from_grid(grid):
     ]
 
 
-def trainer_from_config(config, results_dir):
-    """
-    Returns a trainer object from a dict of params
-    """
-
-    def policy_config(policy_name):
-        if policy_name == "dqn":
-            # return {"model": {"custom_options": config["model_config"]}}
-            return {}
-        raise NotImplemented(f"unknown policy {policy_name}")
-
+def obs_dims(config):
     grid = grid_from_config(config)
-    obs_dims = (len(grid["clean"]), len(grid["clean"][0]), 4)
-    obs_space = Box(0, 1, obs_dims, dtype=np.int32)
-    action_space = Discrete(5)
-    policies = config["policy_config"]
-    multi_agent_config = {
-        "policies": {
-            f"a{num}": (None, obs_space, action_space, policy_config(policy_name))
-            for num, policy_name in config["policy_config"].items()
-        },
-        "policy_mapping_fn": lambda agent_id: agent_id,
-    }
-    model_config = {
-        "dim": 3,
-        "conv_filters": [
-            [16, [3, 3], 2],
-            [32, [4, 4], 1],
-        ],
-        "conv_activation": "relu",
-    }
-    eval_config = {"verbose": True}
-    trainer_config = {
-        "multiagent": multi_agent_config,
-        # "model": model_config,
-        "env_config": config["env_config"],
-        "callbacks": DefaultCallbacks,
-        "evaluation_config": eval_config,
-        **config["ray_config"],
-    }
-
-    return PPOTrainer(
-        trainer_config,
-        "ZSC-Cleaner",
-        logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
-    )
+    dims = (len(grid["clean"]), len(grid["clean"][0]), 4)
+    return dims
 
 
-def save_trainer(trainer, config, path=None, verbose=True):
+def save_trainer(trainer, path=None, verbose=True):
     save_path = trainer.save(path)
-    config = deepcopy(config)
-    config_path = os.path.join(os.path.dirname(save_path), "config.pkl")
-    with open(config_path, "wb") as f:
-        dill.dump(config, f)
     if verbose:
         print(f"saved trainer at {save_path}")
     return save_path

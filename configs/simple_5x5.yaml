@@ -28,5 +28,6 @@ ray_config:
   seed: 0
 
 run_config:
-  verbose: True
   wandb_project: zsc-cleaner
+  heterogeneous: False
+  verbose: True
