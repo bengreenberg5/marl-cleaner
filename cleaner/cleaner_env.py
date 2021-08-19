@@ -10,8 +10,9 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         super().__init__()
         if "agent_names" not in env_config:
             env_config["agent_names"] = [
-                f"{run_name}:{num}" for num in range(self.game.num_agents)
+                f"{run_name}:{num}" for num in range(env_config["num_agents"])
             ]
+        self.agent_names = env_config["agent_names"]
         self.game = CleanerGame(**env_config)
         self.observation_space = Box(
             0, 1, obs_dims({"env_config": env_config}), dtype=np.int32
@@ -25,7 +26,7 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
     def step(self, actions):
         reward = self.game.step(actions)
         done = self.game.is_done()
-        info = {agent: {} for agent in self.agent_names.keys()}
+        info = {agent: {} for agent in self.agent_names}
         return self.game.agent_obs(), reward, done, info
 
     def render(self, fig=None, ax=None, mode=None):

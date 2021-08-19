@@ -30,7 +30,7 @@ class CleanerGame:
             np.count_nonzero(clean_agent == 1) == 0
         ), "position containing agent must be clean"
         assert (
-            clean_agent.sum() == self.num_agents
+            self.grid["agent"].sum().sum() == self.num_agents
         ), "environment layout must correspond to `num_agents`"
 
     def reset(self):

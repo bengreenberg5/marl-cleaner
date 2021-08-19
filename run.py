@@ -36,10 +36,10 @@ class ArgParser(BaseParser):
     }
 
 
-def evaluate(agents, env_config, eval_run_name, record=True):
+def evaluate(agents, config, eval_run_name, record=True):
     # create env
     done = {"__all__": False}
-    env = CleanerEnv(env_config, run_name=eval_run_name)
+    env = CleanerEnv(config["env_config"], run_name=eval_run_name)
     fig, ax = plt.subplots()
     images = []
 
@@ -51,9 +51,10 @@ def evaluate(agents, env_config, eval_run_name, record=True):
             im = env.game.render(fig, ax)
             images.append([im])
         for agent_name in agents.keys():
+            policy_id = agent_name if config["run_config"]["heterogeneous"] else "agent_policy"
             actions[agent_name] = agents[agent_name].trainer.compute_action(
                 observation=env.game.agent_obs()[agent_name],
-                policy_id=agent_name,
+                policy_id=policy_id,
             )
         _, reward, done, _ = env.step(actions)
         rewards.append(reward)
@@ -112,7 +113,7 @@ def create_trainer(agents, policy_name, config, results_dir):
             "ZSC-Cleaner",
             logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
         )
-    for agent in agents:
+    for _, agent in agents.items():
         agent.trainer = trainer
     return trainer
 
@@ -127,14 +128,14 @@ def train(agents, trainer, training_iters, run_name, config, results_dir, checkp
         if eval_freq != 0 and i % eval_freq == 0:
             evaluate(
                 agents=agents,
-                env_config=config["env_config"],
+                config=config,
                 eval_run_name=run_name,
                 record=True
             )
     save_trainer(trainer, path=results_dir, verbose=verbose)
     evaluate(
         agents=agents,
-        env_config=config["env_config"],
+        config=config,
         eval_run_name=run_name,
         record=True
     )
