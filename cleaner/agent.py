@@ -1,7 +1,4 @@
-import dill
-import os
-
-from utils import RAY_DIR
+from cleaner.utils import RAY_DIR
 
 
 class Agent(object):

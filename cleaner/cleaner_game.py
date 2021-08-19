@@ -51,7 +51,7 @@ class CleanerGame:
         obs = np.stack(
             [self.grid[layer] for layer in ["clean", "dirty", "agent", "wall"]], axis=-1
         )
-        return {agent: obs for agent in self.agent_pos.keys()}
+        return {agent: obs for agent in self.agent_names}
 
     def step(self, actions):
         reward = 0
@@ -68,7 +68,7 @@ class CleanerGame:
                 self.grid["clean"][new_pos] = 1
             self.agent_pos[agent] = new_pos
         self.tick += 1
-        return {agent: reward for agent in self.agent_pos.keys()}
+        return {agent: reward for agent in self.agent_names}
 
     def render(self, fig=None, ax=None):
         if not fig or not ax:

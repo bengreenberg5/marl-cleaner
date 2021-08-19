@@ -23,7 +23,6 @@ ray_config:
   num_workers: 10
   train_batch_size: 2000
   rollout_fragment_length: 100
-  vf_loss_coef: 0.01
   lr: 0.001
   seed: 0
 

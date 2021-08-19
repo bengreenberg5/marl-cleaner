@@ -14,7 +14,7 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
             ]
         self.game = CleanerGame(**env_config)
         self.observation_space = Box(
-            0, 1, self.game.agent_obs()["a0"].shape, dtype=np.int32
+            0, 1, obs_dims({"env_config": env_config}), dtype=np.int32
         )
         self.action_space = Discrete(5)
 
@@ -23,10 +23,9 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         return grid
 
     def step(self, actions):
-        agents = self.game.agent_pos.keys()
         reward = self.game.step(actions)
         done = self.game.is_done()
-        info = {agent: {} for agent in agents}
+        info = {agent: {} for agent in self.agent_names.keys()}
         return self.game.agent_obs(), reward, done, info
 
     def render(self, fig=None, ax=None, mode=None):
