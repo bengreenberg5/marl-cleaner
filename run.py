@@ -84,9 +84,7 @@ def create_trainer(agents, policy_name, config, results_dir):
     return trainer
 
 
-
-
-def evaluate(agents, config, eval_run_name, record=True):
+def evaluate(agents, config, eval_run_name, checkpoint_num, record=True):
     # create env
     done = {"__all__": False}
     env = CleanerEnv(config["env_config"], run_name=eval_run_name)
@@ -101,7 +99,9 @@ def evaluate(agents, config, eval_run_name, record=True):
             im = env.game.render(fig, ax)
             images.append([im])
         for agent_name in agents.keys():
-            policy_id = agent_name if config["run_config"]["heterogeneous"] else "agent_policy"
+            policy_id = (
+                agent_name if config["run_config"]["heterogeneous"] else "agent_policy"
+            )
             actions[agent_name] = agents[agent_name].trainer.compute_action(
                 observation=env.game.agent_obs()[agent_name],
                 policy_id=policy_id,
@@ -111,7 +111,7 @@ def evaluate(agents, config, eval_run_name, record=True):
 
     # create video
     if record:
-        video_filename = f"{RAY_DIR}/{eval_run_name}/video.mp4"
+        video_filename = f"{RAY_DIR}/{eval_run_name}/checkpoint_{str(checkpoint_num).zfill(6)}/video.mp4"
         ani = animation.ArtistAnimation(
             fig, images, interval=200, blit=True, repeat_delay=10000
         )
@@ -121,7 +121,17 @@ def evaluate(agents, config, eval_run_name, record=True):
     print(f"episode reward: {sum([sum(r.values()) for r in rewards])}")
 
 
-def train(agents, trainer, training_iters, run_name, config, results_dir, checkpoint_freq=0, eval_freq=0, verbose=True):
+def train(
+    agents,
+    trainer,
+    training_iters,
+    run_name,
+    config,
+    results_dir,
+    checkpoint_freq=0,
+    eval_freq=0,
+    verbose=True,
+):
     for i in range(training_iters):
         if verbose:
             print(f"starting training iteration {i}")
@@ -133,14 +143,16 @@ def train(agents, trainer, training_iters, run_name, config, results_dir, checkp
                 agents=agents,
                 config=config,
                 eval_run_name=run_name,
-                record=True
+                checkpoint_num=i + 1,
+                record=True,
             )
     save_trainer(trainer, path=results_dir, verbose=verbose)
     evaluate(
         agents=agents,
         config=config,
         eval_run_name=run_name,
-        record=True
+        checkpoint_num=training_iters,
+        record=True,
     )
 
 
@@ -182,7 +194,9 @@ def main():
 
     # train model(s)
     results_dir = f"{os.path.expanduser('~')}/ray_results/{args.name}/"
-    trainer = create_trainer(agents=agents, policy_name=args.policy, config=config, results_dir=results_dir)
+    trainer = create_trainer(
+        agents=agents, policy_name=args.policy, config=config, results_dir=results_dir
+    )
     train(
         agents=agents,
         trainer=trainer,
@@ -192,7 +206,7 @@ def main():
         results_dir=results_dir,
         checkpoint_freq=args.checkpoint_freq,
         eval_freq=args.eval_freq,
-        verbose=config["run_config"]["verbose"]
+        verbose=config["run_config"]["verbose"],
     )
     ray.shutdown()
     print(f"finished training {args.name}")
