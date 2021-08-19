@@ -49,7 +49,7 @@ class Position(namedtuple("Position", ["i", "j"])):
             return self.i == other.i and self.j == other.j
         if isinstance(other, (tuple, list)):
             assert (
-                    len(other) == 2
+                len(other) == 2
             ), "Position equality comparison must be with a length-2 sequence"
             return self.i == other[0] and self.j == other[1]
         raise ValueError("A Position can only be compared with a Position-like item.")
@@ -60,25 +60,25 @@ class CleanerCallbacks(DefaultCallbacks):
         super().__init__()
 
     def on_episode_start(
-            self,
-            *,
-            worker: RolloutWorker,
-            base_env: BaseEnv,
-            policies: Dict[PolicyID, Policy],
-            episode: MultiAgentEpisode,
-            env_index: Optional[int] = None,
-            **kwargs,
+        self,
+        *,
+        worker: RolloutWorker,
+        base_env: BaseEnv,
+        policies: Dict[PolicyID, Policy],
+        episode: MultiAgentEpisode,
+        env_index: Optional[int] = None,
+        **kwargs,
     ) -> None:
         episode.user_data["rewards"] = list()
 
     def on_episode_step(
-            self,
-            *,
-            worker: RolloutWorker,
-            base_env: BaseEnv,
-            episode: MultiAgentEpisode,
-            env_index: Optional[int] = None,
-            **kwargs,
+        self,
+        *,
+        worker: RolloutWorker,
+        base_env: BaseEnv,
+        episode: MultiAgentEpisode,
+        env_index: Optional[int] = None,
+        **kwargs,
     ) -> None:
         rewards = {}
         for agent in base_env.get_unwrapped()[0].game.agent_pos.keys():
@@ -86,14 +86,14 @@ class CleanerCallbacks(DefaultCallbacks):
         episode.user_data["rewards"].append(rewards)
 
     def on_episode_end(
-            self,
-            *,
-            worker: RolloutWorker,
-            base_env: BaseEnv,
-            policies: Dict[PolicyID, Policy],
-            episode: MultiAgentEpisode,
-            env_index: Optional[int] = None,
-            **kwargs,
+        self,
+        *,
+        worker: RolloutWorker,
+        base_env: BaseEnv,
+        policies: Dict[PolicyID, Policy],
+        episode: MultiAgentEpisode,
+        env_index: Optional[int] = None,
+        **kwargs,
     ) -> None:
         # custom metrics get saved to the logfile
         episode.custom_metrics["rewards"] = sum(
@@ -114,12 +114,9 @@ MASKS = {
     "agent": 2,
     "wall": 3,
 }
-COLORS = matplotlib.colors.ListedColormap([
-    "green",  # clean (and no agent)
-    "red",    # dirty
-    "white",  # agent
-    "grey"    # wall
-])
+COLORS = matplotlib.colors.ListedColormap(
+    ["green", "red", "white", "grey"]  # clean (and no agent)  # dirty  # agent  # wall
+)
 RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
 
 
@@ -139,7 +136,12 @@ def grid_from_layout(layout):
     XXXXX         [0 0 0 0 0]    [0 0 0 0 0]    [0 0 0 0 0]    [1 1 1 1 1]
     '''         }
     """
-    layout = np.array([list(line) for line in layout.replace(" ", "").lstrip("\n").rstrip("\n").split("\n")])
+    layout = np.array(
+        [
+            list(line)
+            for line in layout.replace(" ", "").lstrip("\n").rstrip("\n").split("\n")
+        ]
+    )
     height = len(layout)
     width = len(layout[0])
     grid = {mask: np.zeros((height, width)) for mask in MASKS.keys()}
@@ -168,7 +170,9 @@ def agent_pos_from_grid(grid):
     Returns a tuple of agent positions from the grid -- top to bottom, left to right
     """
     agent_pos = np.where(grid["agent"])
-    return [Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos))]
+    return [
+        Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos))
+    ]
 
 
 def trainer_from_config(config, results_dir):
@@ -202,9 +206,7 @@ def trainer_from_config(config, results_dir):
         ],
         "conv_activation": "relu",
     }
-    eval_config = {
-        "verbose": True
-    }
+    eval_config = {"verbose": True}
     trainer_config = {
         "multiagent": multi_agent_config,
         # "model": model_config,

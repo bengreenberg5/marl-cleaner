@@ -36,7 +36,9 @@ class CleanerGame:
     def reset(self):
         self.grid = grid_from_layout(self.layout)
         pos_list = agent_pos_from_grid(self.grid)
-        self.agent_pos = {self.agent_names[i]: pos_list[i] for i in range(self.num_agents)}
+        self.agent_pos = {
+            self.agent_names[i]: pos_list[i] for i in range(self.num_agents)
+        }
         self.tick = 0
         self._validate_grid()
         return self.agent_obs()
@@ -46,7 +48,9 @@ class CleanerGame:
         return {"__all__": done}
 
     def agent_obs(self):
-        obs = np.stack([self.grid[layer] for layer in ["clean", "dirty", "agent", "wall"]], axis=-1)
+        obs = np.stack(
+            [self.grid[layer] for layer in ["clean", "dirty", "agent", "wall"]], axis=-1
+        )
         return {agent: obs for agent in self.agent_pos.keys()}
 
     def step(self, actions):
@@ -73,12 +77,3 @@ class CleanerGame:
         # board[0, 0] = 4
         im = ax.imshow(board, cmap=COLORS)
         return im
-
-
-
-
-
-
-
-
-

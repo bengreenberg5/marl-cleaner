@@ -9,9 +9,13 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
     def __init__(self, env_config, run_name):
         super().__init__()
         if "agent_names" not in env_config:
-            env_config["agent_names"] = [f"{run_name}:{num}" for num in range(self.game.num_agents)]
+            env_config["agent_names"] = [
+                f"{run_name}:{num}" for num in range(self.game.num_agents)
+            ]
         self.game = CleanerGame(**env_config)
-        self.observation_space = Box(0, 1, self.game.agent_obs()["a0"].shape, dtype=np.int32)
+        self.observation_space = Box(
+            0, 1, self.game.agent_obs()["a0"].shape, dtype=np.int32
+        )
         self.action_space = Discrete(5)
 
     def reset(self):

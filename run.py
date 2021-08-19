@@ -25,11 +25,11 @@ class ArgParser(BaseParser):
     eval_freq: int = 25
 
     _help = {
-        "config":           "Path to the config of the experiment",
-        "name":             "Name of subdirectory containing results for this experiment",
-        "training_iters":   "Number of training iterations",
-        "checkpoint_freq":  "How many training iterations between checkpoints; a value of 0 (default) disables checkpointing",
-        "eval_freq":        "How many training iterations between evaluations"
+        "config": "Path to the config of the experiment",
+        "name": "Name of subdirectory containing results for this experiment",
+        "training_iters": "Number of training iterations",
+        "checkpoint_freq": "How many training iterations between checkpoints; a value of 0 (default) disables checkpointing",
+        "eval_freq": "How many training iterations between evaluations",
     }
 
 
@@ -63,7 +63,9 @@ def evaluate(agents, env_config, eval_run_name, record=True):
         agents[agent.name] = agent
         trainer = agent.get_trainer(checkpoint_num)
         trainers[agent.name] = trainer
-    eval_config["env_config"]["agent_names"] = [agent.name for agent in agents.keys()]  # use "original" agent names
+    eval_config["env_config"]["agent_names"] = [
+        agent.name for agent in agents.keys()
+    ]  # use "original" agent names
     print(f"created trainers")
 
     done = {"__all__": False}
@@ -98,6 +100,10 @@ def evaluate(agents, env_config, eval_run_name, record=True):
         print(f"saved video at {video_filename}")
 
 
+def train(agents, config):
+    pass
+
+
 def main():
     args = ArgParser()
     config = load_config(args.config)
@@ -105,7 +111,9 @@ def main():
     ray_config = config["ray_config"]
     run_config = config["run_config"]
     eval_config = {
-        "agents": [(args.name, i, args.training_iters) for i in range(env_config["num_agents"])],
+        "agents": [
+            (args.name, i, args.training_iters) for i in range(env_config["num_agents"])
+        ],
         "env_config": env_config,
         "eval_name": args.name,
     }
@@ -136,7 +144,7 @@ def main():
         if args.checkpoint_freq != 0 and i % args.checkpoint_freq == 0:
             save_trainer(trainer, config, path=results_dir, verbose=verbose)
         if args.eval_freq != 0 and i % args.eval_freq == 0:
-            evaluate(config, args.name, i+1, record=True)
+            evaluate(config, args.name, i + 1, record=True)
 
     save_trainer(trainer, config, path=results_dir, verbose=verbose)
     evaluate(config, args.name, args.training_iters, record=True)
