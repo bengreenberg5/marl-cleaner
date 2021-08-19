@@ -33,7 +33,7 @@ class ArgParser(BaseParser):
     }
 
 
-def evaluate(eval_config, record=True):
+def evaluate(agents, env_config, eval_run_name, record=True):
     """
     eval_config = {
         "agents": [  # run_name, agent_num, checkpoint_num

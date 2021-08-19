@@ -27,10 +27,6 @@ ray_config:
   evaluation_num_workers: 0
   seed: 0
 
-policy_config:
-  0: dqn
-  1: dqn
-
 run_config:
   verbose: True
   wandb_project: zsc-cleaner
