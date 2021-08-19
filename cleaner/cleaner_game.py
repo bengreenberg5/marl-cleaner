@@ -63,9 +63,9 @@ class CleanerGame:
             self.grid["agent"][pos] = 0
             self.grid["agent"][new_pos] = 1
             if self.grid["dirty"][new_pos]:
-                reward += 1
                 self.grid["dirty"][new_pos] = 0
                 self.grid["clean"][new_pos] = 1
+                reward += 1
             self.agent_pos[agent] = new_pos
         self.tick += 1
         return {agent: reward for agent in self.agent_names}
