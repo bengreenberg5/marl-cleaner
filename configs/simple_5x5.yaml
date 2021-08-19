@@ -9,6 +9,7 @@ env_config:
     XDDDDAX
     XXXXXXX
   tick_limit: 12
+  num_agents: 2
 
 model_config:
   num_hidden_layers:

@@ -5,15 +5,13 @@ from cleaner.utils import *
 
 
 class CleanerGame:
-    def __init__(self, layout, tick_limit):
+    def __init__(self, layout, tick_limit, num_agents, agent_names):
         self.layout = layout  # human-readable layout
         self.tick_limit = tick_limit  # how many time steps before game ends
+        self.num_agents = num_agents  # how many agents on the board
+        self.agent_names = agent_names  # list of agent identifiers
         self.size = (len(layout), len(layout[0]))  # height and width of grid
-        self.grid = grid_from_layout(layout)  # masks for environment features
-        self.agent_pos = agent_pos_from_grid(self.grid)  # tuples of agent positions
-        self.num_agents = len(self.agent_pos)  # number of agents in environment
-        self.tick = 0  # current time step
-        self._validate_grid()
+        self.reset()
 
     def __repr__(self):
         return self.layout
@@ -31,11 +29,16 @@ class CleanerGame:
         assert (
             np.count_nonzero(clean_agent == 1) == 0
         ), "position containing agent must be clean"
+        assert (
+            clean_agent.sum() == self.num_agents
+        ), "environment layout must correspond to `num_agents`"
 
     def reset(self):
         self.grid = grid_from_layout(self.layout)
-        self.agent_pos = agent_pos_from_grid(self.grid)
+        pos_list = agent_pos_from_grid(self.grid)
+        self.agent_pos = {self.agent_names[i]: pos_list[i] for i in range(self.num_agents)}
         self.tick = 0
+        self._validate_grid()
         return self.agent_obs()
 
     def is_done(self):
@@ -73,7 +76,7 @@ class CleanerGame:
 
 
 class Agent:
-    def __init__(self, run_name, agent_num):
+    def __init__(self, policy_name, run_name, agent_num):
         self.run_name = run_name
         self.agent_num = agent_num
         self.name = f"{run_name}:{agent_num}"

@@ -37,11 +37,11 @@ def evaluate(eval_config, record=True):
     """
     eval_config = {
         "agents": [  # run_name, agent_num, checkpoint_num
-            ("ppo5", 0, 1000),
-            ("ppo5", 1, 1000),
+            ("ppo", "ppo5", 0, 1000),
+            ("ppo", "ppo5", 1, 1000),
         ],
         "env_config": {
-            layout: '''
+            "layout": '''
                     XXXXXXX
                     XADDDDX
                     XDDDDDX
@@ -50,23 +50,27 @@ def evaluate(eval_config, record=True):
                     XDDDDAX
                     XXXXXXX
                     ''',
-            tick_limit: 12,
+            "tick_limit": 12,
+            "num_agents": 2,
         },
         "eval_name": "my_eval",
     }
     """
     agents = {}
     trainers = {}
-    for run_name, agent_num, checkpoint_num in agents:
-        agent = Agent(run_name, agent_num)
+    for run_name, agent_num, checkpoint_num in eval_config["agents"]:
+        agent = Agent(policy_name, run_name, agent_num)
         agents[agent.name] = agent
         trainer = agent.get_trainer(checkpoint_num)
         trainers[agent.name] = trainer
+    eval_config["env_config"]["agent_names"] = [agent.name for agent in agents.keys()]  # use "original" agent names
+    print(f"created trainers")
 
     done = {"__all__": False}
-    env = CleanerEnv(eval_config["env_config"], run_name=eval_config["eval_name"], agent_names=list(agents.keys()))
+    env = CleanerEnv(eval_config["env_config"], run_name=eval_config["eval_name"])
     fig, ax = plt.subplots()
     images = []
+    print(f"created env")
 
     # run episode
     rewards = []
@@ -82,6 +86,7 @@ def evaluate(eval_config, record=True):
             )
         _, reward, done, _ = env.step(actions)
         rewards.append(reward)
+        print(env.game.tick, done)
     print(f"episode reward: {sum(rewards)}")
 
     if record:
@@ -99,6 +104,11 @@ def main():
     env_config = config["env_config"]
     ray_config = config["ray_config"]
     run_config = config["run_config"]
+    eval_config = {
+        "agents": [(args.name, i, args.training_iters) for i in range(env_config["num_agents"])],
+        "env_config": env_config,
+        "eval_name": args.name,
+    }
 
     ray.shutdown()
     ray.init()

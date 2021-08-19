@@ -139,7 +139,7 @@ def grid_from_layout(layout):
     XXXXX         [0 0 0 0 0]    [0 0 0 0 0]    [0 0 0 0 0]    [1 1 1 1 1]
     '''         }
     """
-    layout = np.array([list(line) for line in layout.rstrip("\n").split("\n")])
+    layout = np.array([list(line) for line in layout.replace(" ", "").lstrip("\n").rstrip("\n").split("\n")])
     height = len(layout)
     width = len(layout[0])
     grid = {mask: np.zeros((height, width)) for mask in MASKS.keys()}
@@ -168,9 +168,7 @@ def agent_pos_from_grid(grid):
     Returns a tuple of agent positions from the grid -- top to bottom, left to right
     """
     agent_pos = np.where(grid["agent"])
-    return {
-        f"a{num}": Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos))
-    }
+    return [Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos))]
 
 
 def trainer_from_config(config, results_dir):
