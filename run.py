@@ -131,9 +131,8 @@ def main():
     register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config, run_name=args.name))
 
     # initialize Weights & Biases
-    username = os.environ["USERNAME"]
-    if not username:
-        username = "anchorwatt"  # TODO fix
+    # TODO username = os.environ["USERNAME"]
+    username = "anchorwatt"
     wandb.init(
         project=run_config["wandb_project"],
         entity=os.environ["USERNAME"],
