@@ -35,7 +35,8 @@ class Agent(object):
 
     @staticmethod
     def create_trainer(agents, policy_name, config, results_dir):
-        obs_space = Box(0, 1, obs_dims(config), dtype=np.int32)
+        obs_shape = obs_dims(config)
+        obs_space = Box(0, 1, obs_shape, dtype=np.int32)
         action_space = Discrete(5)
         policy = (None, obs_space, action_space, {})
         if config["run_config"]["heterogeneous"]:
@@ -48,10 +49,12 @@ class Agent(object):
                 "policies": {"agent_policy": policy},
                 "policy_mapping_fn": lambda agent_name: "agent_policy",
             }
+        kernel_0_dim = [config["model_config"]["conv_kernel_size"]] * 2
+        kernel_1_dim = [obs_shape[0] + 2, obs_shape[1] + 2]
         model_config = {
             "conv_filters": [
-                [16, [3, 3], 2],
-                [32, [4, 4], 1],
+                [16, [kernel_0_dim], 1],
+                [32, [kernel_1_dim], 1],
             ],
             "conv_activation": "relu",
         }

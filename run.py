@@ -144,7 +144,7 @@ def main():
     agents = {}
     for i in range(config["env_config"]["num_agents"]):
         agent = Agent(args.policy)
-        agent.prepare_to_run(run_name=args.name, agent_num=i)
+        agent.prepare_to_run(run_name=args.name, agent_num=i, config=config)
         agents[agent.name] = agent
 
     # train model(s)

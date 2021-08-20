@@ -12,10 +12,7 @@ env_config:
   num_agents: 2
 
 model_config:
-  num_hidden_layers:
-  size_hidden_layers:
-  num_filters:
-  num_conv_layers:
+  conv_kernel_size: 3
 
 ray_config:
   framework: torch
