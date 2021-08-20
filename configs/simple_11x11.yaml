@@ -1,0 +1,35 @@
+---
+env_config:
+  layout: |
+    XXXXXXXXXXXXX
+    XADDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDDX
+    XDDDDDDDDDDAX
+    XXXXXXX
+  tick_limit: 100
+  num_agents: 2
+
+model_config:
+  conv_kernel_size: 3
+
+ray_config:
+  framework: torch
+  env: "ZSC-Cleaner"
+  num_workers: 10
+  train_batch_size: 2000
+  rollout_fragment_length: 100
+  lr: 0.0001
+  seed: 0
+
+run_config:
+  wandb_project: zsc-cleaner
+  heterogeneous: True
+  verbose: True

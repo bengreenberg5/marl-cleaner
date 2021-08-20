@@ -54,7 +54,7 @@ class CleanerGame:
         return {agent: obs for agent in self.agent_names}
 
     def step(self, actions):
-        reward = 0
+        reward = -0.25
         for agent, action in actions.items():
             pos = self.agent_pos[agent]
             new_pos = pos + MOVES[action]

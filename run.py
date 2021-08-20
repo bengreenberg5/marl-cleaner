@@ -19,7 +19,7 @@ from cleaner.cleaner_env import *
 
 
 class ArgParser(BaseParser):
-    config: str = "simple_3x3"
+    config: str = "simple_5x5"
     name: str = "cleaner"
     policy: str = "ppo"
     training_iters: int = 5
