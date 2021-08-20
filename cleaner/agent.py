@@ -50,11 +50,11 @@ class Agent(object):
                 "policy_mapping_fn": lambda agent_name: "agent_policy",
             }
         kernel_0_dim = [config["model_config"]["conv_kernel_size"]] * 2
-        kernel_1_dim = [obs_shape[0] + 2, obs_shape[1] + 2]
+        kernel_1_dim = list(obs_shape[:2])
         model_config = {
             "conv_filters": [
-                [16, [kernel_0_dim], 1],
-                [32, [kernel_1_dim], 1],
+                [16, kernel_0_dim, 1],
+                [32, kernel_1_dim, 1],
             ],
             "conv_activation": "relu",
         }
