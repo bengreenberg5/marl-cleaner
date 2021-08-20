@@ -135,7 +135,7 @@ def main():
     username = "anchorwatt"
     wandb.init(
         project=run_config["wandb_project"],
-        entity=os.environ["USERNAME"],
+        entity=username,
         config=config,
         monitor_gym=True,
         sync_tensorboard=True,
