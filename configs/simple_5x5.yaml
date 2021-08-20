@@ -28,5 +28,5 @@ ray_config:
 
 run_config:
   wandb_project: zsc-cleaner
-  heterogeneous: False
+  heterogeneous: True
   verbose: True

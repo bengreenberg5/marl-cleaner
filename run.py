@@ -36,55 +36,7 @@ class ArgParser(BaseParser):
     }
 
 
-def create_trainer(agents, policy_name, config, results_dir):
-    obs_space = Box(0, 1, obs_dims(config), dtype=np.int32)
-    action_space = Discrete(5)
-    policy = (None, obs_space, action_space, {})
-    if config["run_config"]["heterogeneous"]:
-        multi_agent_config = {
-            "policies": {agent_name: deepcopy(policy) for agent_name in agents.keys()},
-            "policy_mapping_fn": lambda agent_name: agent_name,
-        }
-    else:
-        multi_agent_config = {
-            "policies": {"agent_policy": policy},
-            "policy_mapping_fn": lambda agent_name: "agent_policy",
-        }
-    model_config = {
-        "conv_filters": [
-            [16, [3, 3], 2],
-            [32, [4, 4], 1],
-        ],
-        "conv_activation": "relu",
-    }
-    eval_config = {"verbose": config["run_config"]["verbose"]}
-    trainer_config = {
-        "num_gpus": int(os.environ.get("RLLIB_NUM_GPUS", "0")),
-        "multiagent": multi_agent_config,
-        "model": model_config,
-        "env_config": config["env_config"],
-        "callbacks": DefaultCallbacks,
-        "evaluation_config": eval_config,
-        **config["ray_config"],
-    }
-    if policy_name == "dqn":
-        trainer = DQNTrainer(
-            trainer_config,
-            "ZSC-Cleaner",
-            logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
-        )
-    else:
-        trainer = PPOTrainer(
-            trainer_config,
-            "ZSC-Cleaner",
-            logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
-        )
-    for _, agent in agents.items():
-        agent.trainer = trainer
-    return trainer
-
-
-def evaluate(agents, config, eval_run_name, checkpoint_num, record=True):
+def evaluate(agents, config, eval_run_name, checkpoint_num=None, record=True):
     # create env
     done = {"__all__": False}
     env = CleanerEnv(config["env_config"], run_name=eval_run_name)
@@ -111,7 +63,10 @@ def evaluate(agents, config, eval_run_name, checkpoint_num, record=True):
 
     # create video
     if record:
-        video_filename = f"{RAY_DIR}/{eval_run_name}/checkpoint_{str(checkpoint_num).zfill(6)}/video.mp4"
+        if checkpoint_num:
+            video_filename = f"{RAY_DIR}/{eval_run_name}/checkpoint_{str(checkpoint_num).zfill(6)}/video.mp4"
+        else:
+            video_filename = f"{RAY_DIR}/{eval_run_name}/video.mp4"
         ani = animation.ArtistAnimation(
             fig, images, interval=200, blit=True, repeat_delay=10000
         )
@@ -194,7 +149,7 @@ def main():
 
     # train model(s)
     results_dir = f"{os.path.expanduser('~')}/ray_results/{args.name}/"
-    trainer = create_trainer(
+    trainer = Agent.create_trainer(
         agents=agents, policy_name=args.policy, config=config, results_dir=results_dir
     )
     train(
