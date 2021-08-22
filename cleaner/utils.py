@@ -111,11 +111,11 @@ MOVES = [
 MASKS = {
     "clean": 0,
     "dirty": 1,
-    "agent": 2,
-    "wall": 3,
+    "wall": 2,
+    "agent": 3,
 }
 COLORS = matplotlib.colors.ListedColormap(
-    ["green", "red", "white", "grey"]  # clean (and no agent)  # dirty  # agent  # wall
+    ["green", "red", "grey", "white"]  # clean (and no agent)  # dirty  # agent  # wall
 )
 RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
 
@@ -160,8 +160,8 @@ def grid_3d_to_2d(grid):
     board = np.zeros(grid["clean"].shape)
     board[np.where(grid["clean"])] = 0
     board[np.where(grid["dirty"])] = 1
-    board[np.where(grid["agent"])] = 2
-    board[np.where(grid["wall"])] = 3
+    board[np.where(grid["wall"])] = 2
+    board[np.where(grid["agent"])] = 3
     return board
 
 
@@ -177,7 +177,7 @@ def agent_pos_from_grid(grid):
 
 def obs_dims(config):
     grid = grid_from_config(config)
-    dims = (len(grid["clean"]), len(grid["clean"][0]), 4)
+    dims = (len(grid["clean"]), len(grid["clean"][0]), 5)
     return dims
 
 

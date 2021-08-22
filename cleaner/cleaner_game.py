@@ -48,10 +48,19 @@ class CleanerGame:
         return {"__all__": done}
 
     def agent_obs(self):
-        obs = np.stack(
-            [self.grid[layer] for layer in ["clean", "dirty", "agent", "wall"]], axis=-1
-        )
-        return {agent: obs for agent in self.agent_names}
+        layers = [self.grid[layer] for layer in ["clean", "dirty", "wall"]]
+        layers.append(np.zeros(layers[0].shape))  # self
+        layers.append(np.zeros(layers[0].shape))  # other
+        base_obs = np.stack(layers, axis=-1)
+        obs = {}
+        for agent_name, agent_pos in self.agent_pos.items():
+            agent_obs = deepcopy(base_obs)
+            agent_obs[agent_pos][3] = 1
+            for other_name, other_pos in self.agent_pos.items():
+                if other_name != agent_name:
+                    agent_obs[other_pos][4] = 1
+            obs[agent_name] = agent_obs
+        return obs
 
     def step(self, actions):
         reward = -0.25
