@@ -74,10 +74,10 @@ class CleanerGame:
             if self.grid["dirty"][new_pos]:
                 self.grid["dirty"][new_pos] = 0
                 self.grid["clean"][new_pos] = 1
-                reward += 1 / len(actions)
+                reward += 1
             self.agent_pos[agent] = new_pos
         self.tick += 1
-        return {agent: reward for agent in self.agent_names}
+        return {agent: reward / self.num_agents for agent in self.agent_names}
 
     def render(self, fig=None, ax=None):
         if not fig or not ax:
