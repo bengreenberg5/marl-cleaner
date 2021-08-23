@@ -6,14 +6,16 @@ from cleaner.cleaner_game import *
 
 
 class CleanerEnv(MultiAgentEnv, gym.Env):
-    def __init__(self, env_config, run_name):
+    def __init__(self, env_config, run_name, agent_names=None):
         super().__init__()
-        if "agent_names" not in env_config:
-            env_config["agent_names"] = [
+        self.env_config = env_config
+        self.run_name = run_name
+        if not agent_names:
+            agent_names = [
                 f"{run_name}:{num}" for num in range(env_config["num_agents"])
             ]
-        self.agent_names = env_config["agent_names"]
-        self.game = CleanerGame(**env_config)
+        self.agent_names = agent_names
+        self.game = CleanerGame(**env_config, agent_names=agent_names)
         self.observation_space = Box(
             0, 1, obs_dims({"env_config": env_config}), dtype=np.int32
         )

@@ -181,6 +181,61 @@ def obs_dims(config):
     return dims
 
 
+def create_trainer(
+    policy_name, agents, config, results_dir, seed=1, heterogeneous=True, num_workers=None
+):
+    obs_shape = obs_dims(config)
+    obs_space = Box(0, 1, obs_shape, dtype=np.int32)
+    action_space = Discrete(5)
+    policy = (None, obs_space, action_space, {})
+    if heterogeneous:
+        multi_agent_config = {
+            "policies": {agent_name: deepcopy(policy) for agent_name in agents.keys()},
+            "policy_mapping_fn": lambda agent_name: agent_name,
+        }
+    else:
+        multi_agent_config = {
+            "policies": {"agent_policy": policy},
+            "policy_mapping_fn": lambda agent_name: "agent_policy",
+        }
+    kernel_0_dim = [config["model_config"]["conv_kernel_size"]] * 2
+    kernel_1_dim = list(obs_shape[:2])
+    model_config = {
+        "conv_filters": [
+            [16, kernel_0_dim, 1],
+            [32, kernel_1_dim, 1],
+        ],
+        "conv_activation": "relu",
+    }
+    eval_config = {"verbose": config["run_config"]["verbose"]}
+    if num_workers:
+        config = deepcopy(config)
+        config["ray_config"]["num_workers"] = num_workers
+    trainer_config = {
+        "num_gpus": int(os.environ.get("RLLIB_NUM_GPUS", "0")),
+        "multiagent": multi_agent_config,
+        "model": model_config,
+        "env_config": config["env_config"],
+        "callbacks": DefaultCallbacks,
+        "evaluation_config": eval_config,
+        "seed": seed,
+        **config["ray_config"],
+    }
+    if policy_name == "dqn":
+        trainer = DQNTrainer(
+            trainer_config,
+            "ZSC-Cleaner",
+            logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
+        )
+    else:
+        trainer = PPOTrainer(
+            trainer_config,
+            "ZSC-Cleaner",
+            logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
+        )
+    return trainer
+
+
 def save_trainer(trainer, path=None, verbose=True):
     save_path = trainer.save(path)
     if verbose:
