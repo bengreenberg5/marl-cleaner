@@ -37,17 +37,14 @@ class ArgParser(BaseParser):
 
 
 def evaluate(agents, config, eval_run_name, checkpoint_num=None, num_episodes=1, record=True):
-    # create env
-    done = {"__all__": False}
-    env = CleanerEnv(config["env_config"], run_name=eval_run_name)
     fig, ax = plt.subplots()
     images = []
     ep_rewards = []
-
-    # run episodes
     for ep in range(num_episodes):
+        env = CleanerEnv(config["env_config"], run_name=eval_run_name)
         ep_reward = 0
         actions = {}
+        done = {"__all__": False}
         while not done["__all__"]:
             if ep == num_episodes - 1 and record:
                 im = env.game.render(fig, ax)
