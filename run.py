@@ -36,44 +36,47 @@ class ArgParser(BaseParser):
     }
 
 
-def evaluate(agents, config, eval_run_name, checkpoint_num=None, record=True):
+def evaluate(agents, config, eval_run_name, checkpoint_num=None, num_episodes=1, record=True):
     # create env
     done = {"__all__": False}
     env = CleanerEnv(config["env_config"], run_name=eval_run_name)
     fig, ax = plt.subplots()
     images = []
+    ep_rewards = []
 
-    # run episode
-    rewards = []
-    actions = {}
-    while not done["__all__"]:
-        if record:
-            im = env.game.render(fig, ax)
-            images.append([im])
-        for agent_name in agents.keys():
-            policy_id = (
-                agent_name if config["run_config"]["heterogeneous"] else "agent_policy"
-            )
-            actions[agent_name] = agents[agent_name].trainer.compute_action(
-                observation=env.game.agent_obs()[agent_name],
-                policy_id=policy_id,
-            )
-        _, reward, done, _ = env.step(actions)
-        rewards.append(reward)
+    # run episodes
+    for ep in range(num_episodes):
+        ep_reward = 0
+        actions = {}
+        while not done["__all__"]:
+            if ep == num_episodes - 1 and record:
+                im = env.game.render(fig, ax)
+                images.append([im])
+            for agent_name in agents.keys():
+                policy_id = (
+                    agent_name if config["run_config"]["heterogeneous"] else "agent_policy"
+                )
+                actions[agent_name] = agents[agent_name].trainer.compute_action(
+                    observation=env.game.agent_obs()[agent_name],
+                    policy_id=policy_id,
+                )
+            _, reward, done, _ = env.step(actions)
+            ep_reward += sum(list(reward.values()))
+        ep_rewards.append(ep_reward)
 
-    # create video
+    # create video from last episode
     if record:
         if checkpoint_num:
             video_filename = f"{RAY_DIR}/{eval_run_name}/checkpoint_{str(checkpoint_num).zfill(6)}/video.mp4"
         else:
             video_filename = f"{RAY_DIR}/{eval_run_name}/video.mp4"
         ani = animation.ArtistAnimation(
-            fig, images, interval=200, blit=True, repeat_delay=10000
+            fig, images, interval=100, blit=True, repeat_delay=10000
         )
         ani.save(video_filename)
         print(f"saved video at {video_filename}")
 
-    print(f"episode reward: {sum([sum(r.values()) for r in rewards])}")
+    print(f"episode rewards: {ep_rewards} (mean = {sum(ep_rewards) / len(ep_rewards)})")
 
 
 def train(
@@ -85,6 +88,7 @@ def train(
     results_dir,
     checkpoint_freq=0,
     eval_freq=0,
+    num_eval_games=5,
     verbose=True,
 ):
     for i in range(training_iters):
@@ -99,6 +103,7 @@ def train(
                 config=config,
                 eval_run_name=run_name,
                 checkpoint_num=i + 1,
+                num_episodes=num_eval_games,
                 record=True,
             )
     save_trainer(trainer, path=results_dir, verbose=verbose)
@@ -107,6 +112,7 @@ def train(
         config=config,
         eval_run_name=run_name,
         checkpoint_num=training_iters,
+        num_episodes=num_eval_games,
         record=True,
     )
 
@@ -163,6 +169,7 @@ def main():
         results_dir=results_dir,
         checkpoint_freq=args.checkpoint_freq,
         eval_freq=args.eval_freq,
+        num_eval_games=5,
         verbose=config["run_config"]["verbose"],
     )
     ray.shutdown()
