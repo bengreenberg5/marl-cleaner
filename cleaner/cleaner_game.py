@@ -33,17 +33,17 @@ class CleanerGame:
         self.grid = grid_from_layout(self.layout)
         pos_list = agent_pos_from_grid(self.grid)
         self.agent_pos = {
-            self.agent_names[i]: Position(pos_list[0][i], pos_list[1][i]) for i in range(len(pos_list[0]))
+            self.agent_names[i]: Position(pos_list[i][0], pos_list[i][1]) for i in range(self.num_agents)
         }
         self.tick = 0
         self._validate_grid()
-        return self.agent_obs()
+        return self.get_agent_obs()
 
     def is_done(self):
         done = self.tick == self.tick_limit or self.grid["dirty"].sum().sum() == 0
         return {"__all__": done}
 
-    def agent_obs(self):
+    def get_agent_obs(self):
         layers = [self.grid[layer] for layer in ["clean", "dirty", "wall"]]
         layers.append(np.zeros(layers[0].shape))  # self
         layers.append(np.zeros(layers[0].shape))  # other

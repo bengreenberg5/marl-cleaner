@@ -67,7 +67,7 @@ def evaluate(
             if ep == num_episodes - 1 and record:
                 im = env.game.render(fig, ax)
                 images.append([im])
-            obs = env.game.agent_obs()
+            obs = env.game.get_agent_obs()
             for agent_name, agent in agents.items():
                 policy_id = agent_name if heterogeneous else "agent_policy"
                 actions[agent_name] = agent.trainer.compute_action(

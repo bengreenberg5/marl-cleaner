@@ -29,7 +29,7 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         reward = self.game.step(actions)
         done = self.game.is_done()
         info = {agent: {} for agent in self.agent_names}
-        return self.game.agent_obs(), reward, done, info
+        return self.game.get_agent_obs(), reward, done, info
 
     def render(self, fig=None, ax=None, mode=None):
         return self.game.render(fig, ax)
