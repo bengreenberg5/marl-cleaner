@@ -171,7 +171,7 @@ def agent_pos_from_grid(grid):
     """
     agent_pos = np.where(grid["agent"])
     return [
-        Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos))
+        Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos[0]))
     ]
 
 

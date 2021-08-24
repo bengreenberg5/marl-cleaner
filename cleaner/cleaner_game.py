@@ -37,8 +37,11 @@ class CleanerGame:
         self.grid = grid_from_layout(self.layout)
         pos_list = agent_pos_from_grid(self.grid)
         self.agent_pos = {
-            self.agent_names[i]: pos_list[i] for i in range(self.num_agents)
+            self.agent_names[i]: Position(pos_list[0][i], pos_list[1][i]) for i in range(len(pos_list[0]))
         }
+        for i in range(self.num_agents):
+            self.agent_names[i]
+            pos_list[i]
         self.tick = 0
         self._validate_grid()
         return self.agent_obs()
