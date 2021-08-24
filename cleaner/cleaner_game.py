@@ -19,16 +19,12 @@ class CleanerGame:
     def _validate_grid(self):
         clean_dirty_wall = self.grid["clean"] + self.grid["dirty"] + self.grid["wall"]
         agent_dirty_wall = self.grid["agent"] + self.grid["dirty"] + self.grid["wall"]
-        clean_agent = self.grid["agent"] + self.grid["clean"]
         assert (
             clean_dirty_wall.max() == 1
         ), "position cannot contain more than one of ('clean', 'dirty', 'wall')"
         assert (
             agent_dirty_wall.max() == 1
         ), "position cannot contain more than one of ('agent', 'dirty', 'wall')"
-        assert (
-            np.count_nonzero(clean_agent == 1) == 0
-        ), "position containing agent must be clean"
         assert (
             self.grid["agent"].sum().sum() == self.num_agents
         ), "environment layout must correspond to `num_agents`"
@@ -39,9 +35,6 @@ class CleanerGame:
         self.agent_pos = {
             self.agent_names[i]: Position(pos_list[0][i], pos_list[1][i]) for i in range(len(pos_list[0]))
         }
-        for i in range(self.num_agents):
-            self.agent_names[i]
-            pos_list[i]
         self.tick = 0
         self._validate_grid()
         return self.agent_obs()
