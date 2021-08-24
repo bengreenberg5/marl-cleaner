@@ -69,7 +69,7 @@ class CleanerGame:
                 continue
             self.grid["agent"][pos] = 0
             self.grid["agent"][new_pos] = 1
-            if self.grid["clean"][new_pos]:
+            if self.grid["clean"][new_pos] and action != 0:
                 reward += self.clean_penalty
             elif self.grid["dirty"][new_pos]:
                 self.grid["dirty"][new_pos] = 0
