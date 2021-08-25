@@ -121,11 +121,11 @@ RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
 
 
 def grid_from_config(config):
-    layout = config["env_config"]["layout"]
-    return grid_from_layout(layout)
+    env_config = config["env_config"]
+    return grid_from_layout(env_config["layout"], env_config["random_start"])
 
 
-def grid_from_layout(layout):
+def grid_from_layout(layout, random_start=False):
     """
     Converts human-readable layout to grid format used internally by CleanerGame
 
@@ -145,11 +145,22 @@ def grid_from_layout(layout):
     height = len(layout)
     width = len(layout[0])
     grid = {mask: np.zeros((height, width)) for mask in MASKS.keys()}
-    grid["clean"][np.where(layout == "C")] = 1
-    grid["clean"][np.where(layout == "A")] = 1
+    num_agents = len(np.where(layout == "A")[0])
     grid["dirty"][np.where(layout == "D")] = 1
-    grid["agent"][np.where(layout == "A")] = 1
+    grid["clean"][np.where(layout == "C")] = 1
     grid["wall"][np.where(layout == "X")] = 1
+    if random_start:
+        grid["dirty"][np.where(layout == "A")] = 1
+        start_pos_list = [(i, j) for i in range(height) for j in range(width) if grid["clean"][i][j] or grid["dirty"][i][j]]
+        idx = np.random.choice(range(len(start_pos_list)), num_agents, replace=False)
+        pos_list = [start_pos_list[i] for i in idx]
+    else:
+        start_pos_list = np.where(layout == "A")
+        pos_list = [(start_pos_list[0][i], start_pos_list[1][i]) for i in range(num_agents)]
+    for i, j in pos_list:
+        grid["agent"][i][j] = 1
+        grid["clean"][i][j] = 1
+        grid["dirty"][i][j] = 0
     return grid
 
 
@@ -221,6 +232,7 @@ def create_trainer(
         "seed": seed,
         **config["ray_config"],
     }
+    from pprint import pprint
     if policy_name == "dqn":
         trainer = DQNTrainer(
             trainer_config,

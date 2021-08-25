@@ -25,6 +25,7 @@ class ArgParser(BaseParser):
     training_iters: int = 5
     seed: int = 1
     homogeneous: bool = False
+    random_start: bool = False
     checkpoint_freq: int = 25
     eval_freq: int = 25
 
@@ -35,7 +36,6 @@ class ArgParser(BaseParser):
         "training_iters": "Number of training iterations",
         "seed": "Random seed for Ray workers",
         "homogeneous": "Whether to centrally train one policy for all agents",
-        "checkpoint_freq": "How many training iterations between checkpoints; a value of 0 (default) disables checkpointing",
         "eval_freq": "How many training iterations between evaluations",
     }
 
@@ -159,6 +159,7 @@ def train(
 def main():
     args = ArgParser()
     config = load_config(args.config)
+    config["env_config"]["random_start"] = args.random_start  # TODO hacky
     env_config = config["env_config"]
     ray_config = config["ray_config"]
     run_config = config["run_config"]
@@ -171,14 +172,14 @@ def main():
     # initialize Weights & Biases
     # TODO username = os.environ["USERNAME"]
     username = "anchorwatt"
-    wandb.init(
-        project=run_config["wandb_project"],
-        entity=username,
-        config=config,
-        monitor_gym=True,
-        sync_tensorboard=True,
-        reinit=True,
-    )
+    # wandb.init(
+    #     project=run_config["wandb_project"],
+    #     entity=username,
+    #     config=config,
+    #     monitor_gym=True,
+    #     sync_tensorboard=True,
+    #     reinit=True,
+    # )
 
     # train model(s)
     train(

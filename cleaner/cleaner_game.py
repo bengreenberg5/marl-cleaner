@@ -5,13 +5,16 @@ from cleaner.utils import *
 
 
 class CleanerGame:
-    def __init__(self, layout, tick_limit, num_agents, agent_names, time_penalty=-0.25, clean_penalty=0.0):
+    def __init__(
+        self, layout, tick_limit, num_agents, agent_names, time_penalty=-0.25, clean_penalty=0.0, random_start=False
+    ):
         self.layout = layout  # human-readable layout
         self.tick_limit = tick_limit  # how many time steps before game ends
         self.num_agents = num_agents  # how many agents on the board
         self.agent_names = agent_names  # list of agent identifiers
         self.time_penalty = time_penalty  # negative reward for each timestep
         self.clean_penalty = clean_penalty  # negative reward for moving into a clean square
+        self.random_start = random_start
         self.size = (len(layout), len(layout[0]))  # height and width of grid
         self.reset()
 
@@ -32,8 +35,8 @@ class CleanerGame:
         ), "environment layout must correspond to `num_agents`"
 
     def reset(self):
-        self.grid = grid_from_layout(self.layout)
-        pos_list = agent_pos_from_grid(self.grid)
+        self.grid = grid_from_layout(self.layout, random_start=self.random_start)
+        pos_list = agent_pos_from_grid(self.grid)  # TODO update
         self.agent_pos = {
             self.agent_names[i]: Position(pos_list[i][0], pos_list[i][1]) for i in range(self.num_agents)
         }
