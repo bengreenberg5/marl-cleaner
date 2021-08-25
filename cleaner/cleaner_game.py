@@ -21,7 +21,7 @@ class CleanerGame:
     def __repr__(self):
         return self.layout
 
-    def _validate_grid(self):
+    def validate_grid(self):
         clean_dirty_wall = self.grid["clean"] + self.grid["dirty"] + self.grid["wall"]
         agent_dirty_wall = self.grid["agent"] + self.grid["dirty"] + self.grid["wall"]
         assert (
@@ -41,7 +41,7 @@ class CleanerGame:
             self.agent_names[i]: Position(pos_list[i][0], pos_list[i][1]) for i in range(self.num_agents)
         }
         self.tick = 0
-        self._validate_grid()
+        self.validate_grid()
         return self.get_agent_obs()
 
     def is_done(self):
