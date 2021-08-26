@@ -122,10 +122,10 @@ RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
 
 def grid_from_config(config):
     env_config = config["env_config"]
-    return grid_from_layout(env_config["layout"], env_config["random_start"])
+    return grid_from_layout(env_config["layout"])
 
 
-def grid_from_layout(layout, random_start=False):
+def grid_from_layout(layout):
     """
     Converts human-readable layout to grid format used internally by CleanerGame
 
@@ -149,14 +149,8 @@ def grid_from_layout(layout, random_start=False):
     grid["dirty"][np.where(layout == "D")] = 1
     grid["clean"][np.where(layout == "C")] = 1
     grid["wall"][np.where(layout == "X")] = 1
-    if random_start:
-        grid["dirty"][np.where(layout == "A")] = 1
-        start_pos_list = [(i, j) for i in range(height) for j in range(width) if grid["clean"][i][j] or grid["dirty"][i][j]]
-        idx = np.random.choice(range(len(start_pos_list)), num_agents, replace=False)
-        pos_list = [start_pos_list[i] for i in idx]
-    else:
-        start_pos_list = np.where(layout == "A")
-        pos_list = [(start_pos_list[0][i], start_pos_list[1][i]) for i in range(num_agents)]
+    start_pos_list = np.where(layout == "A")
+    pos_list = [(start_pos_list[0][i], start_pos_list[1][i]) for i in range(num_agents)]
     for i, j in pos_list:
         grid["agent"][i][j] = 1
         grid["clean"][i][j] = 1
@@ -176,13 +170,15 @@ def grid_3d_to_2d(grid):
     return board
 
 
-def agent_pos_from_grid(grid):
+def agent_pos_from_grid(grid, random_start=False):
     """
-    Returns a tuple of agent positions from the grid -- top to bottom, left to right
+    Returns a tuple of agent positions from the grid -- top to bottom, left to right by default
     """
     agent_pos = np.where(grid["agent"])
+    num_agents = len(agent_pos[0])
+    agent_order = np.random.permutation(num_agents) if random_start else range(num_agents)
     return [
-        Position(agent_pos[0][num], agent_pos[1][num]) for num in range(len(agent_pos[0]))
+        Position(agent_pos[0][num], agent_pos[1][num]) for num in agent_order
     ]
 
 

@@ -35,11 +35,9 @@ class CleanerGame:
         ), "environment layout must correspond to `num_agents`"
 
     def reset(self):
-        self.grid = grid_from_layout(self.layout, random_start=self.random_start)
-        pos_list = agent_pos_from_grid(self.grid)  # TODO update
-        self.agent_pos = {
-            self.agent_names[i]: Position(pos_list[i][0], pos_list[i][1]) for i in range(self.num_agents)
-        }
+        self.grid = grid_from_layout(self.layout)
+        pos_list = agent_pos_from_grid(self.grid, random_start=self.random_start)
+        self.agent_pos = {self.agent_names[i]: pos_list[i] for i in range(self.num_agents)}
         self.tick = 0
         self.validate_grid()
         return self.get_agent_obs()
