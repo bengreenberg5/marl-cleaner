@@ -90,10 +90,11 @@ def evaluate(
         )
         ani.save(video_filename)
         print(f"saved video at {video_filename}")
+    else:
+        ani = None
 
     print(f"episode rewards: {ep_rewards} (mean = {sum(ep_rewards) / len(ep_rewards)})")
-    if record:
-        return ani
+    return ep_rewards, ani
 
 
 def train(
