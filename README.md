@@ -1,10 +1,3 @@
-Implementation of the Cleaner Game described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
+Custom implementation of the Cleaner Game described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
 
-### Installation
-
-- `pip install -r requirements.txt`
-- Weights and Biases
-- ffmpeg
-
-### Training
-
+This work was completed as part of SERI's Summer Research Program. The repo is still in progress as of 2021-08-27 -- by 2021-09-02, I will hopefully have added tests, typing, requirements, documentation, and a more fleshed-out README.
