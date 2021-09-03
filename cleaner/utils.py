@@ -231,20 +231,22 @@ def create_trainer(
         "seed": seed,
         **config["ray_config"],
     }
-    from pprint import pprint
 
-    if policy_name == "dqn":
+    if policy_name == "ppo":
+        trainer = PPOTrainer(
+            trainer_config,
+            "ZSC-Cleaner",
+            logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
+        )
+    elif policy_name == "dqn":
         trainer = DQNTrainer(
             trainer_config,
             "ZSC-Cleaner",
             logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
         )
     else:
-        trainer = PPOTrainer(
-            trainer_config,
-            "ZSC-Cleaner",
-            logger_creator=lambda cfg: UnifiedLogger(cfg, results_dir),
-        )
+        print(f"trainer not implemented for policy: {policy_name}")
+        trainer = None
     return trainer
 
 
