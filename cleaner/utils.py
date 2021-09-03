@@ -176,10 +176,10 @@ def agent_pos_from_grid(grid, random_start=False):
     """
     agent_pos = np.where(grid["agent"])
     num_agents = len(agent_pos[0])
-    agent_order = np.random.permutation(num_agents) if random_start else range(num_agents)
-    return [
-        Position(agent_pos[0][num], agent_pos[1][num]) for num in agent_order
-    ]
+    agent_order = (
+        np.random.permutation(num_agents) if random_start else range(num_agents)
+    )
+    return [Position(agent_pos[0][num], agent_pos[1][num]) for num in agent_order]
 
 
 def obs_dims(config):
@@ -189,7 +189,13 @@ def obs_dims(config):
 
 
 def create_trainer(
-    policy_name, agents, config, results_dir, seed=1, heterogeneous=True, num_workers=None
+    policy_name,
+    agents,
+    config,
+    results_dir,
+    seed=1,
+    heterogeneous=True,
+    num_workers=None,
 ):
     obs_shape = obs_dims(config)
     obs_space = Box(0, 1, obs_shape, dtype=np.int32)
@@ -229,6 +235,7 @@ def create_trainer(
         **config["ray_config"],
     }
     from pprint import pprint
+
     if policy_name == "dqn":
         trainer = DQNTrainer(
             trainer_config,

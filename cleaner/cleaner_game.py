@@ -6,14 +6,23 @@ from cleaner.utils import *
 
 class CleanerGame:
     def __init__(
-        self, layout, tick_limit, num_agents, agent_names, time_penalty=-0.25, clean_penalty=0.0, random_start=False
+        self,
+        layout,
+        tick_limit,
+        num_agents,
+        agent_names,
+        time_penalty=-0.25,
+        clean_penalty=0.0,
+        random_start=False,
     ):
         self.layout = layout  # human-readable layout
         self.tick_limit = tick_limit  # how many time steps before game ends
         self.num_agents = num_agents  # how many agents on the board
         self.agent_names = agent_names  # list of agent identifiers
         self.time_penalty = time_penalty  # negative reward for each timestep
-        self.clean_penalty = clean_penalty  # negative reward for moving into a clean square
+        self.clean_penalty = (
+            clean_penalty  # negative reward for moving into a clean square
+        )
         self.random_start = random_start
         self.size = (len(layout), len(layout[0]))  # height and width of grid
         self.reset()
@@ -37,7 +46,9 @@ class CleanerGame:
     def reset(self):
         self.grid = grid_from_layout(self.layout)
         pos_list = agent_pos_from_grid(self.grid, random_start=self.random_start)
-        self.agent_pos = {self.agent_names[i]: pos_list[i] for i in range(self.num_agents)}
+        self.agent_pos = {
+            self.agent_names[i]: pos_list[i] for i in range(self.num_agents)
+        }
         self.tick = 0
         self.validate_grid()
         return self.get_agent_obs()
