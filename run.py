@@ -26,7 +26,9 @@ class ArgParser(BaseParser):
         "policy": "RL algorithm",
         "training_iters": "Number of training iterations",
         "seed": "Random seed for Ray workers",
-        "homogeneous": "Whether to centrally train one policy for all agents",
+        "homogeneous": "Centrally train one policy for all agents",
+        "random_start": "Randomly initialize the starting positions",
+        "checkpoint_freq": "How many training iterations between trainer checkpoints",
         "eval_freq": "How many training iterations between evaluations",
     }
 
@@ -151,15 +153,12 @@ def train(
 def main():
     args = ArgParser()
     config = load_config(args.config)
-    config["env_config"]["random_start"] = args.random_start  # TODO hacky
-    env_config = config["env_config"]
-    ray_config = config["ray_config"]
-    run_config = config["run_config"]
+    config["env_config"]["random_start"] = args.random_start  # hacky
 
     # initialize ray
     ray.shutdown()
     ray.init()
-    register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config, run_name=args.name))
+    register_env("ZSC-Cleaner", lambda _: CleanerEnv(config["env_config"], run_name=args.name))
 
     # train model(s)
     train(
