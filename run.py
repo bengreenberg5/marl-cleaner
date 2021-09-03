@@ -1,3 +1,5 @@
+from typing import List, Any, Union
+
 import matplotlib.pyplot as plt
 from matplotlib import animation
 from typarse import BaseParser
@@ -34,28 +36,37 @@ class ArgParser(BaseParser):
 
 
 def evaluate(
-    agents,
-    eval_config,
-    eval_run_name,
-    seed=1,
-    heterogeneous=True,
-    num_episodes=1,
-    video_filename=None,
+    agents: Dict[str, Agent],
+    eval_config: Dict[str, Any],
+    eval_run_name: str,
+    heterogeneous: bool = True,
+    num_episodes: int = 1,
+    video_filename: Optional[str] = None,
     record=True,
 ):
+    """
+    Simulate rounds of play for a group of agents
+    :param agents: The agents to evaluate, in order of instantiation
+    :param eval_config: Config for the evaluation environment
+    :param eval_run_name: Name of results directory
+    :param heterogeneous: Whether to use decentralized training
+    :param num_episodes: How many episodes to simulate
+    :param video_filename: Optional filename for a video of the last episode
+    :param record: Whether to record the last episode
+    :return: a tuple of (list of rewards, video object)
+    """
     fig, ax = plt.subplots()
     images = []
     ep_rewards = []
     agent_names = [agent.name for agent in agents.values()]
 
     for ep in range(num_episodes):
-        env = CleanerEnv(
-            eval_config["env_config"], run_name=eval_run_name, agent_names=agent_names
-        )
+        env = CleanerEnv(eval_config["env_config"], run_name=eval_run_name, agent_names=agent_names)
         ep_reward = 0
         actions = {}
         done = {"__all__": False}
 
+        # simulate one episode
         while not done["__all__"]:
             if ep == num_episodes - 1 and record:
                 im = env.game.render(fig, ax)
@@ -127,7 +138,6 @@ def train(
                 agents=agents,
                 eval_config=config,
                 eval_run_name=run_name,
-                seed=seed,
                 heterogeneous=heterogeneous,
                 video_filename=video_filename,
                 num_episodes=num_eval_episodes,
@@ -141,7 +151,6 @@ def train(
         agents=agents,
         eval_config=config,
         eval_run_name=run_name,
-        seed=seed,
         heterogeneous=heterogeneous,
         video_filename=video_filename,
         num_episodes=num_eval_episodes,
