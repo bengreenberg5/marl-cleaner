@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 from matplotlib import animation
 from typarse import BaseParser
 
