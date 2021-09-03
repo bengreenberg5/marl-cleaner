@@ -1,14 +1,4 @@
-import numpy as np
-import os
-from copy import deepcopy
-
-from gym.spaces import Box, Discrete
-from ray.rllib.agents import DefaultCallbacks
-from ray.rllib.agents.dqn import DQNTrainer
-from ray.rllib.agents.ppo import PPOTrainer
-from ray.tune.logger import UnifiedLogger
-
-from cleaner.utils import RAY_DIR, obs_dims, create_trainer
+from cleaner.utils import RAY_DIR
 
 
 class Agent(object):

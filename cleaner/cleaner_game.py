@@ -1,6 +1,3 @@
-from copy import deepcopy
-import numpy as np
-
 from cleaner.utils import *
 
 

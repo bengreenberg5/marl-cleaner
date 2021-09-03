@@ -1,17 +1,7 @@
-from collections import defaultdict
 from matplotlib import animation
-import os
-from pathlib import Path
-import stat
 from typarse import BaseParser
-from typing import Dict, Optional
-import wandb
 
 import ray
-from ray.rllib.evaluation import MultiAgentEpisode
-from ray.rllib.utils.typing import PolicyID
-from ray.rllib import RolloutWorker, BaseEnv, Policy
-from ray.rllib.agents import DefaultCallbacks
 from ray.tune import register_env
 
 from cleaner.agent import Agent
@@ -169,18 +159,6 @@ def main():
     ray.shutdown()
     ray.init()
     register_env("ZSC-Cleaner", lambda _: CleanerEnv(env_config, run_name=args.name))
-
-    # initialize Weights & Biases
-    # TODO username = os.environ["USERNAME"]
-    username = "anchorwatt"
-    # wandb.init(
-    #     project=run_config["wandb_project"],
-    #     entity=username,
-    #     config=config,
-    #     monitor_gym=True,
-    #     sync_tensorboard=True,
-    #     reinit=True,
-    # )
 
     # train model(s)
     train(

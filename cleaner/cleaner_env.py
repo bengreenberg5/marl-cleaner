@@ -1,5 +1,4 @@
 import gym
-from gym.spaces import Box, Discrete
 from ray.rllib.env import MultiAgentEnv
 
 from cleaner.cleaner_game import *

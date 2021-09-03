@@ -1,9 +1,7 @@
 from collections import namedtuple
 from copy import deepcopy
-import dill
 from gym.spaces import Box, Discrete
 import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 from typing import Dict, Optional
@@ -13,7 +11,6 @@ from ray.rllib import RolloutWorker, BaseEnv, Policy
 from ray.rllib.agents import DefaultCallbacks
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.ppo import PPOTrainer
-from ray.rllib.agents.trainer import COMMON_CONFIG
 from ray.rllib.evaluation import MultiAgentEpisode
 from ray.rllib.utils.typing import PolicyID
 from ray.tune.logger import UnifiedLogger
