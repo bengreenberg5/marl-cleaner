@@ -102,17 +102,31 @@ def evaluate(
 
 
 def train(
-    run_name,
-    config,
-    policy_name,
-    training_iters,
-    seed,
-    heterogeneous,
-    checkpoint_freq=0,
-    eval_freq=0,
-    num_eval_episodes=5,
-    verbose=True,
+    run_name: str,
+    config: Dict[str, Any],
+    policy_name: str,
+    training_iters: int,
+    seed: int,
+    heterogeneous: bool,
+    checkpoint_freq: int = 0,
+    eval_freq: int = 0,
+    num_eval_episodes: int = 5,
+    verbose: bool = True,
 ):
+    """
+    Run one experiment
+    :param run_name: Name of results directory
+    :param config: Config for the evaluation environment
+    :param policy_name: "ppo" or "dqn"
+    :param training_iters: How many iterations for ray
+    :param seed: Random seed
+    :param heterogeneous: Whether or not to use decentralized training
+    :param checkpoint_freq: How often to save trainer
+    :param eval_freq: How often to evaluate trainer
+    :param num_eval_episodes: How many episodes to evaluate
+    :param verbose: Print out evaluation results
+    :return: None
+    """
     # initialize agents
     agents = {}
     for agent_num in range(config["env_config"]["num_agents"]):
@@ -156,7 +170,6 @@ def train(
         num_episodes=num_eval_episodes,
         record=True,
     )
-    return agents
 
 
 def main():
