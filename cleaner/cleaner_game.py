@@ -1,16 +1,18 @@
+from matplotlib import pyplot as plt
+
 from cleaner.utils import *
 
 
 class CleanerGame:
     def __init__(
         self,
-        layout,
-        tick_limit,
-        num_agents,
-        agent_names,
-        time_penalty=-0.25,
-        clean_penalty=0.0,
-        random_start=False,
+        layout: str,
+        tick_limit: int,
+        num_agents: int,
+        agent_names: List[str],
+        time_penalty: float = -0.25,
+        clean_penalty: float = 0.0,
+        random_start: bool = False,
     ):
         self.layout = layout  # human-readable layout
         self.tick_limit = tick_limit  # how many time steps before game ends
@@ -69,7 +71,7 @@ class CleanerGame:
             obs[agent_name] = agent_obs
         return obs
 
-    def step(self, actions):
+    def step(self, actions: Dict[str, int]):
         reward = self.time_penalty
         for agent, action in actions.items():
             pos = self.agent_pos[agent]

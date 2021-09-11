@@ -4,19 +4,52 @@ from gym.spaces import Box, Discrete
 import matplotlib
 import numpy as np
 import os
-from typing import Dict, Optional
+from typing import Dict, Optional, Any, List, Tuple
 import yaml
 
 from ray.rllib import RolloutWorker, BaseEnv, Policy
-from ray.rllib.agents import DefaultCallbacks
+from ray.rllib.agents import DefaultCallbacks, Trainer
 from ray.rllib.agents.dqn import DQNTrainer
 from ray.rllib.agents.ppo import PPOTrainer
 from ray.rllib.evaluation import MultiAgentEpisode
 from ray.rllib.utils.typing import PolicyID
 from ray.tune.logger import UnifiedLogger
 
+RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
+
+
+class Agent(object):
+    """
+    Container for agent params
+    """
+
+    def __init__(
+        self,
+        policy_name: str,
+        run_name: str,
+        agent_num: int,
+        config: Dict[str, Any],
+        seed: int,
+        heterogeneous: bool,
+    ):
+        assert policy_name in ["ppo", "dqn"], f"unknown policy name: {policy_name}"
+        self.policy_name = policy_name
+        self.run_name = run_name
+        self.agent_num = agent_num
+        self.config = config
+        self.seed = seed
+        self.heterogeneous = heterogeneous
+        self.trainer = None
+        self.results_dir = f"{RAY_DIR}/{run_name}"
+        self.name = f"{run_name}:{agent_num}"
+        self.eval_name = None
+
 
 class Position(namedtuple("Position", ["i", "j"])):
+    """
+    Represents one space in the grid
+    """
+
     def __add__(self, other):
         if isinstance(other, Position):
             return Position(i=self.i + other.i, j=self.j + other.j)
@@ -53,6 +86,10 @@ class Position(namedtuple("Position", ["i", "j"])):
 
 
 class CleanerCallbacks(DefaultCallbacks):
+    """
+    Callbacks for custom metrics
+    """
+
     def __init__(self):
         super().__init__()
 
@@ -105,26 +142,30 @@ MOVES = [
     Position(0, -1),  # WEST
     Position(0, 1),  # EAST
 ]
+
 MASKS = {
     "clean": 0,
     "dirty": 1,
     "wall": 2,
     "agent": 3,
 }
+
 COLORS = matplotlib.colors.ListedColormap(
     ["green", "red", "grey", "white"]  # clean (and no agent)  # dirty  # agent  # wall
 )
-RAY_DIR = f"{os.path.expanduser('~')}/ray_results"
 
 
-def grid_from_config(config):
+def grid_from_config(config: Dict[str, Any]) -> Dict[str, np.array]:
+    """
+    Create grid from params
+    """
     env_config = config["env_config"]
     return grid_from_layout(env_config["layout"])
 
 
-def grid_from_layout(layout):
+def grid_from_layout(layout: str) -> Dict[str, np.array]:
     """
-    Converts human-readable layout to grid format used internally by CleanerGame
+    Convert human-readable layout to grid format used internally by CleanerGame
 
     '''         {    clean:         dirty:         agent:         wall:
     XXXXX         [0 0 0 0 0]    [0 0 0 0 0]    [0 0 0 0 0]    [1 1 1 1 1]
@@ -155,7 +196,7 @@ def grid_from_layout(layout):
     return grid
 
 
-def grid_3d_to_2d(grid):
+def grid_3d_to_2d(grid: Dict[str, np.array]) -> np.array:
     """
     Squashes 4 layers into 1
     """
@@ -167,9 +208,11 @@ def grid_3d_to_2d(grid):
     return board
 
 
-def agent_pos_from_grid(grid, random_start=False):
+def agent_pos_from_grid(
+    grid: Dict[str, np.array], random_start: bool = False
+) -> List[Position]:
     """
-    Returns a tuple of agent positions from the grid -- top to bottom, left to right by default
+    Return a tuple of agent positions from the grid -- top to bottom, left to right by default
     """
     agent_pos = np.where(grid["agent"])
     num_agents = len(agent_pos[0])
@@ -179,21 +222,27 @@ def agent_pos_from_grid(grid, random_start=False):
     return [Position(agent_pos[0][num], agent_pos[1][num]) for num in agent_order]
 
 
-def obs_dims(config):
+def obs_dims(config: Dict[str, Any]) -> Tuple[int, int, int]:
+    """
+    Get dimensions of agent observations
+    """
     grid = grid_from_config(config)
     dims = (len(grid["clean"]), len(grid["clean"][0]), 5)
     return dims
 
 
 def create_trainer(
-    policy_name,
-    agents,
-    config,
-    results_dir,
-    seed=1,
-    heterogeneous=True,
-    num_workers=None,
-):
+    policy_name: str,
+    agents: Dict[str, Agent],
+    config: Dict[str, Any],
+    results_dir: str,
+    seed: int = 1,
+    heterogeneous: bool = True,
+    num_workers: None = Optional[int],
+) -> Trainer:
+    """
+    Create a trainer object for the given agents and params
+    """
     obs_shape = obs_dims(config)
     obs_space = Box(0, 1, obs_shape, dtype=np.int32)
     action_space = Discrete(5)
@@ -250,14 +299,20 @@ def create_trainer(
     return trainer
 
 
-def save_trainer(trainer, path=None, verbose=True):
+def save_trainer(trainer: Trainer, path: str = None, verbose: bool = True) -> None:
+    """
+    Save trainer to file
+    """
     save_path = trainer.save(path)
     if verbose:
         print(f"saved trainer at {save_path}")
     return save_path
 
 
-def load_config(config_name):
+def load_config(config_name: str) -> Dict[str, Any]:
+    """
+    Load params from file
+    """
     fname = f"configs/{config_name}.yaml"
     try:
         with open(fname, "r") as f:

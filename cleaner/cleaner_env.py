@@ -5,7 +5,12 @@ from cleaner.cleaner_game import *
 
 
 class CleanerEnv(MultiAgentEnv, gym.Env):
-    def __init__(self, env_config, run_name, agent_names=None):
+    def __init__(
+        self,
+        env_config: Dict[str, Any],
+        run_name: str,
+        agent_names: Optional[List[str]] = None,
+    ):
         super().__init__()
         self.env_config = env_config
         self.run_name = run_name
@@ -24,7 +29,7 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         grid = self.game.reset()
         return grid
 
-    def step(self, actions):
+    def step(self, actions: Dict[str, int]):
         reward = self.game.step(actions)
         done = self.game.is_done()
         info = {agent: {} for agent in self.agent_names}

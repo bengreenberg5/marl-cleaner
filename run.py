@@ -1,7 +1,8 @@
-from typing import List, Any, Union
+from typing import Any, Tuple, List
 
 import matplotlib.pyplot as plt
 from matplotlib import animation
+from matplotlib.animation import Animation
 from typarse import BaseParser
 
 import ray
@@ -43,7 +44,7 @@ def evaluate(
     num_episodes: int = 1,
     video_filename: Optional[str] = None,
     record=True,
-):
+) -> Tuple[List[float], Optional[Animation]]:
     """
     Simulate rounds of play for a group of agents
     :param agents: The agents to evaluate, in order of instantiation
@@ -61,7 +62,9 @@ def evaluate(
     agent_names = [agent.name for agent in agents.values()]
 
     for ep in range(num_episodes):
-        env = CleanerEnv(eval_config["env_config"], run_name=eval_run_name, agent_names=agent_names)
+        env = CleanerEnv(
+            eval_config["env_config"], run_name=eval_run_name, agent_names=agent_names
+        )
         ep_reward = 0
         actions = {}
         done = {"__all__": False}
@@ -180,7 +183,9 @@ def main():
     # initialize ray
     ray.shutdown()
     ray.init()
-    register_env("ZSC-Cleaner", lambda _: CleanerEnv(config["env_config"], run_name=args.name))
+    register_env(
+        "ZSC-Cleaner", lambda _: CleanerEnv(config["env_config"], run_name=args.name)
+    )
 
     # train model(s)
     train(
