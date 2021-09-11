@@ -238,7 +238,7 @@ def create_trainer(
     results_dir: str,
     seed: int = 1,
     heterogeneous: bool = True,
-    num_workers: None = Optional[int],
+    num_workers: int = 1,
 ) -> Trainer:
     """
     Create a trainer object for the given agents and params
@@ -267,9 +267,7 @@ def create_trainer(
         "conv_activation": "relu",
     }
     eval_config = {"verbose": config["run_config"]["verbose"]}
-    if num_workers:
-        config = deepcopy(config)
-        config["ray_config"]["num_workers"] = num_workers
+    config["ray_config"]["num_workers"] = num_workers
     trainer_config = {
         "num_gpus": int(os.environ.get("RLLIB_NUM_GPUS", "0")),
         "multiagent": multi_agent_config,

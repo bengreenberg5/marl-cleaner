@@ -1,6 +1,3 @@
-from typing import Any, Tuple, List
-
-import matplotlib.pyplot as plt
 from matplotlib import animation
 from matplotlib.animation import Animation
 from typarse import BaseParser
@@ -8,7 +5,6 @@ from typarse import BaseParser
 import ray
 from ray.tune import register_env
 
-from cleaner.agent import Agent
 from cleaner.cleaner_env import *
 
 
