@@ -10,7 +10,7 @@ from cleaner.cleaner_env import *
 
 class ArgParser(BaseParser):
     name: str = "cleaner_run"
-    config: str = "simple_5x5"
+    config: str = "simple_2"
     policy: str = "ppo"
     training_iters: int = 5
     seed: int = 1

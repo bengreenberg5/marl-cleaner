@@ -1,7 +1,7 @@
 import pytest
 
-from cleaner.cleaner_env import *
-from cleaner.utils import *
+from cleaner.utils import load_config
+from cleaner.cleaner_env import CleanerEnv
 
 
 @pytest.fixture
