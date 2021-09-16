@@ -2,6 +2,8 @@
 
 Custom implementation of the Cleaner Game described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
 
+[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/vt5fpE0bzSY)
+
 Cleaner is a simple cooperative game meant to illustrate the difficulty of [zero-shot coordination](https://arxiv.org/abs/2106.06613v1). Multiple agents travel around a rectangular grid, turning "dirty" squares into "clean" squares by visiting them. The game is similar to Pac-Man -- with multiple players and no monsters.
 
 Each time step, agents can move 1 space up, down, left, or right; they receive a shared reward of 1 for each square cleaned, and incur a small time penalty. The episode ends after a fixed number of time steps, or when there are no remaining dirty squares. Once an agent visits a square, it is clean for the remainder of the episode. Agents can occupy the same square concurrently, but cannot receive double rewards for doing so.
