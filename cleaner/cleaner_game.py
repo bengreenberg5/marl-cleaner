@@ -42,7 +42,7 @@ class CleanerGame:
             self.grid["agent"].sum().sum() == self.num_agents
         ), "environment layout must correspond to `num_agents`"
 
-    def reset(self):
+    def reset(self) -> Dict[str, float]:
         self.grid = grid_from_layout(self.layout)
         pos_list = agent_pos_from_grid(self.grid, random_start=self.random_start)
         self.agent_pos = {
@@ -52,11 +52,11 @@ class CleanerGame:
         self.validate_grid()
         return self.get_agent_obs()
 
-    def is_done(self):
+    def is_done(self) -> Dict[str, bool]:
         done = self.tick == self.tick_limit or self.grid["dirty"].sum().sum() == 0
         return {"__all__": done}
 
-    def get_agent_obs(self):
+    def get_agent_obs(self) -> Dict[str, float]:
         layers = [self.grid[layer] for layer in ["clean", "dirty", "wall"]]
         layers.append(np.zeros(layers[0].shape))  # self
         layers.append(np.zeros(layers[0].shape))  # other
@@ -71,7 +71,7 @@ class CleanerGame:
             obs[agent_name] = agent_obs
         return obs
 
-    def step(self, actions: Dict[str, int]):
+    def step(self, actions: Dict[str, int]) -> Dict[str, float]:
         reward = self.time_penalty
         for agent, action in actions.items():
             pos = self.agent_pos[agent]

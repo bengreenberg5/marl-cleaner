@@ -297,7 +297,7 @@ def create_trainer(
     return trainer
 
 
-def save_trainer(trainer: Trainer, path: str = None, verbose: bool = True) -> None:
+def save_trainer(trainer: Trainer, path: str = None, verbose: bool = True) -> Optional[str]:
     """
     Save trainer to file
     """

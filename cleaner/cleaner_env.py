@@ -29,7 +29,7 @@ class CleanerEnv(MultiAgentEnv, gym.Env):
         grid = self.game.reset()
         return grid
 
-    def step(self, actions: Dict[str, int]):
+    def step(self, actions: Dict[str, int]) -> Tuple[Dict[str, np.array], Dict[str, float], Dict[str, bool], Dict[str, str]]:
         reward = self.game.step(actions)
         done = self.game.is_done()
         info = {agent: {} for agent in self.agent_names}
