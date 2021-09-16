@@ -44,7 +44,7 @@ After installing the requirements, you can run training with:
 
 Arguments:
 - `--name <NAME>`: Experiment name; results will appear in a subdirectory with this name
-- `--config <CONFIG>`: Name of the config file (e.g. to use `configs/simple_4.yaml` run with `--config simple_4`
+- `--config <CONFIG>`: Name of the config file (e.g. to use `configs/simple_4.yaml` run with `--config simple_4`)
 - `--policy <POLICY>`: Which RL algorithm to use (default: "ppo")
 - `--training_iters <NUM>`: Number of training iterations
 - `--seed <SEED>`: Random seed for Ray workers
