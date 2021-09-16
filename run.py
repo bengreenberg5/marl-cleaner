@@ -16,6 +16,7 @@ class ArgParser(BaseParser):
     seed: int = 1
     homogeneous: bool = False
     random_start: bool = False
+    no_record: bool = False
     checkpoint_freq: int = 25
     eval_freq: int = 25
 
@@ -27,6 +28,7 @@ class ArgParser(BaseParser):
         "seed": "Random seed for Ray workers",
         "homogeneous": "Centrally train one policy for all agents",
         "random_start": "Randomly initialize the starting positions",
+        "no_record": "Don't save video in evaluation",
         "checkpoint_freq": "How many training iterations between trainer checkpoints",
         "eval_freq": "How many training iterations between evaluations",
     }
@@ -105,8 +107,9 @@ def train(
     config: Dict[str, Any],
     policy_name: str,
     training_iters: int,
-    seed: int,
-    heterogeneous: bool,
+    seed: int = 1,
+    heterogeneous: bool = True,
+    record: bool = True,
     checkpoint_freq: int = 0,
     eval_freq: int = 0,
     num_eval_episodes: int = 5,
@@ -120,6 +123,7 @@ def train(
     :param training_iters: How many iterations for ray
     :param seed: Random seed
     :param heterogeneous: Whether or not to use decentralized training
+    :param record: Whether to save video during evaluation
     :param checkpoint_freq: How often to save trainer
     :param eval_freq: How often to evaluate trainer
     :param num_eval_episodes: How many episodes to evaluate
@@ -154,7 +158,7 @@ def train(
                 heterogeneous=heterogeneous,
                 video_filename=video_filename,
                 num_episodes=num_eval_episodes,
-                record=True,
+                record=record,
             )
     save_trainer(trainer, path=results_dir, verbose=verbose)
     video_filename = (
@@ -167,7 +171,7 @@ def train(
         heterogeneous=heterogeneous,
         video_filename=video_filename,
         num_episodes=num_eval_episodes,
-        record=True,
+        record=record,
     )
 
 
@@ -191,6 +195,7 @@ def main():
         training_iters=args.training_iters,
         seed=args.seed,
         heterogeneous=not args.homogeneous,
+        record=not args.no_record,
         checkpoint_freq=args.checkpoint_freq,
         eval_freq=args.eval_freq,
         num_eval_episodes=5,
