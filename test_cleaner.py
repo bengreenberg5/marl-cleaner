@@ -23,24 +23,30 @@ def test_step(env):
     assert env.game.tick == 0
     assert env.game.agent_pos["test:0"] == (1, 1)
     assert env.game.agent_pos["test:1"] == (11, 11)
-    env.step({
-        "test:0": 4,  # east
-        "test:1": 3,  # west
-    })
+    env.step(
+        {
+            "test:0": 4,  # east
+            "test:1": 3,  # west
+        }
+    )
     assert env.game.tick == 1
     assert env.game.agent_pos["test:0"] == (1, 2)
     assert env.game.agent_pos["test:1"] == (11, 10)
-    env.step({
-        "test:0": 2,  # south
-        "test:1": 1,  # north
-    })
+    env.step(
+        {
+            "test:0": 2,  # south
+            "test:1": 1,  # north
+        }
+    )
     assert env.game.tick == 2
     assert env.game.agent_pos["test:0"] == (2, 2)
     assert env.game.agent_pos["test:1"] == (10, 10)
-    env.step({
-        "test:0": 3,  # west
-        "test:1": 4,  # east
-    })
+    env.step(
+        {
+            "test:0": 3,  # west
+            "test:1": 4,  # east
+        }
+    )
     assert env.game.tick == 3
     assert env.game.agent_pos["test:0"] == (2, 1)
     assert env.game.agent_pos["test:1"] == (10, 11)
@@ -65,7 +71,12 @@ def test_cleaning(env):
     _, reward, _, _ = env.step({"test:0": 0, "test:1": 3})
     assert sum(reward.values()) == 0.75
     assert env.game.grid["clean"].sum().sum() == 4
-    _, reward, _, _, = env.step({"test:0": 0, "test:1": 0})
+    (
+        _,
+        reward,
+        _,
+        _,
+    ) = env.step({"test:0": 0, "test:1": 0})
     assert sum(reward.values()) == -0.25
     assert env.game.grid["clean"].sum().sum() == 4
     _, reward, _, _ = env.step({"test:0": 4, "test:1": 3})
