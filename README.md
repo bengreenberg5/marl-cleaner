@@ -1,8 +1,9 @@
 ### Overview
 
-Custom implementation of the Cleaner Game described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
+Custom implementation of the Cleaner game originally described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
 
-[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/vt5fpE0bzSY)
+
+A video of self-play can be seen [here](https://www.youtube.com/watch?v=NcSvX9B6ACs).
 
 Cleaner is a simple cooperative game meant to illustrate the difficulty of [zero-shot coordination](https://arxiv.org/abs/2106.06613v1). Multiple agents travel around a rectangular grid, turning "dirty" squares into "clean" squares by visiting them. The game is similar to Pac-Man -- with multiple players and no monsters.
 
