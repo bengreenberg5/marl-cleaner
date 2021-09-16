@@ -43,29 +43,14 @@ After installing the requirements, you can run training with:
 ```python run.py --name test_run --config simple_2```
 
 Arguments:
-    - `--name <NAME>`: Experiment name; results will appear in a subdirectory with this name
-    - `--config <CONFIG>`: Name of the config file (e.g. to use `configs/simple_4.yaml` run with `--config simple_4`
-    - `--policy <POLICY>`: Which RL algorithm to use (default: "ppo")
-    - `--training_iters <NUM>`: Number of training iterations
-    - `--seed <SEED>`: Random seed for Ray workers
-    - `--homogeneous`: Centrally train one policy for all agents
-    - `--random_start`: Randomly initialize the starting positions each episode
-    - `--no_record`: Don't save video in evaluation
-    - `--checkpoint_freq <FREQ>`: How many training iterations between trainer checkpoints
-    - `--eval_freq <FREQ>`: How many training iterations between evaluations
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+- `--name <NAME>`: Experiment name; results will appear in a subdirectory with this name
+- `--config <CONFIG>`: Name of the config file (e.g. to use `configs/simple_4.yaml` run with `--config simple_4`
+- `--policy <POLICY>`: Which RL algorithm to use (default: "ppo")
+- `--training_iters <NUM>`: Number of training iterations
+- `--seed <SEED>`: Random seed for Ray workers
+- `--homogeneous`: Centrally train one policy for all agents
+- `--random_start`: Randomly initialize the starting positions each episode
+- `--no_record`: Don't save video in evaluation
+- `--checkpoint_freq <FREQ>`: How many training iterations between trainer checkpoints
+- `--eval_freq <FREQ>`: How many training iterations between evaluations
 
