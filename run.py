@@ -1,6 +1,6 @@
+from typarse import BaseParser
 from matplotlib import animation
 from matplotlib.animation import Animation
-from typarse import BaseParser
 
 import ray
 from ray.tune import register_env
