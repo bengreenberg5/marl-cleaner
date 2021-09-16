@@ -16,7 +16,7 @@ In order to render videos of episodes, you may have to install [ffmpeg](). If yo
 
 ### Repo Overview
 
--`cleaner/`:
+- `cleaner/`: Implementation of environment
     - `cleaner_game.py`: Base class for game logic
     - `cleaner_env.py`: Wrapper around `CleanerGame` for gym API
     - `utils.py`: Utility functions for training and evaluation
