@@ -130,17 +130,16 @@ def train(
     :param verbose: Print out evaluation results
     :return: None
     """
-    # initialize agents
+    # initialize agents and trainer
     agents = {}
     for agent_num in range(config["env_config"]["num_agents"]):
         agent = Agent(policy_name, run_name, agent_num, config, seed, heterogeneous)
         agents[agent.name] = agent
-
-    # run training
     results_dir = list(agents.values())[0].results_dir
     trainer = create_trainer(
         policy_name, agents, config, results_dir, seed=seed, heterogeneous=heterogeneous
     )
+    # run training
     for i in range(training_iters):
         if verbose:
             print(f"starting training iteration {i}")
@@ -187,7 +186,7 @@ def main():
         "ZSC-Cleaner", lambda _: CleanerEnv(config["env_config"], run_name=args.name)
     )
 
-    # train model(s)
+    # train model
     train(
         run_name=args.name,
         config=config,
