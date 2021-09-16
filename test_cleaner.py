@@ -1,6 +1,6 @@
 import pytest
 
-from cleaner.utils import load_config, MASKS
+from cleaner.utils import Agent, create_trainer, load_config, MASKS
 from cleaner.cleaner_env import CleanerEnv
 
 
@@ -73,31 +73,21 @@ def test_cleaning(env):
     assert env.game.grid["clean"].sum().sum() == 6
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def test_create_trainer():
+    config = load_config("simple_2")
+    policy_name = "ppo"
+    run_name = "test"
+    agents = {}
+    for agent_num in range(config["env_config"]["num_agents"]):
+        agent = Agent(policy_name, run_name, agent_num, config, seed, heterogeneous)
+        agents[agent.name] = agent
+    results_dir = list(agents.values())[0].results_dir
+    create_trainer(
+        policy_name="ppo",
+        agents=agents,
+        config=config,
+        results_dir=results_dir,
+        seed=1,
+        heterogeneous=True,
+        num_workers=1,
+    )
