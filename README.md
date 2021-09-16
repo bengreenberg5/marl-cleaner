@@ -16,35 +16,21 @@ In order to render videos of episodes, you may have to install [ffmpeg](). If yo
 
 ### Repo Overview
 
-`cleaner/`:
-
+-`cleaner/`:
     - `cleaner_game.py`: Base class for game logic
-
     - `cleaner_env.py`: Wrapper around `CleanerGame` for gym API
-
     - `utils.py`: Utility functions for training and evaluation
-
-`configs/`: Collection of configuration files for running experiments
-
+- `configs/`: Collection of configuration files for running experiments
     - `simple_2.yaml`: 11x11 board with 2 agents
-
     - `simple_4.yaml`: 11x11 board with 4 agents
-
     - `simple_8.yaml`: 11x11 board with 8 agents
-
     - `ring_4.yaml`: 11x11 board with an inscribed cross and 4 agents
-
     - `halls.yaml`: 8x9 board with 6 "hallways"
-
     - `simple_4_lava.yaml`: like `simple_4` but visiting a clean square incurs a penalty
-
-`videos/`: Miscellaneous episode recordings
-
-`run.py`: Main class for running training
-
-`evaluation.ipynb`: Jupyter notebook for evaluating self-play and cross-play scores. The file is too large to view in GitHub
-
-`test_cleaner.py`: Environment tests
+- `videos/`: Miscellaneous episode recordings
+- `run.py`: Main class for running training
+- `evaluation.ipynb`: Jupyter notebook for evaluating self-play and cross-play scores. The file is too large to view in GitHub
+- `test_cleaner.py`: Environment tests
 
 ### Usage
 
