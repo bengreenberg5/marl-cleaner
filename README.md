@@ -1,4 +1,4 @@
-### Overview
+## Overview
 
 Custom implementation of the Cleaner game originally described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
 
@@ -12,13 +12,13 @@ Each time step, agents can move 1 space up, down, left, or right; they receive a
 
 This work was completed as part of SERI's 2021 Summer Research Program. A write-up describing the experiments can be found [here](https://drive.google.com/file/d/1bb4MJENEPSIdV0O4P_QrhDJC8UfPVZU5/view?usp=sharing).
 
-### Installation
+## Installation
 
 Create a new virtual environment and install packages with `pip install -r requirements.txt`.
 
 In order to render videos of episodes, you may have to install [ffmpeg](). If you don't want to render videos, you can run training with the `--no_record` flag.
 
-### Repo Overview
+## Repo Overview
 
 - `cleaner/`: Implementation of environment
     - `cleaner_game.py`: Base class for game logic
@@ -36,7 +36,7 @@ In order to render videos of episodes, you may have to install [ffmpeg](). If yo
 - `evaluation.ipynb`: Jupyter notebook for evaluating self-play and cross-play scores. The file is too large to view in GitHub
 - `test_cleaner.py`: Environment tests
 
-### Usage
+## Usage
 
 After installing the requirements, you can run training with:
 
