@@ -2,7 +2,9 @@
 
 Custom implementation of the Cleaner game originally described [here](https://github.com/Bigpig4396/Multi-Agent-Reinforcement-Learning-Environment/blob/master/env_Cleaner/Cleaner.pdf).
 
-<center><img src="cleaner_simple.png" width=600/></center>
+<p align=center>
+<img src="cleaner_simple.png" width=600/>
+</p>
 
 A video of self-play can be seen [here](https://www.youtube.com/watch?v=NcSvX9B6ACs).
 
